@@ -95,7 +95,7 @@ public class Init extends Canvas implements Runnable {
         }
         Graphics g = bs.getDrawGraphics();
         if (started)
-            render();
+            render(g);
         else
             splash(g);
         g.drawImage(image, 0, 0, getWidth(), getHeight(), null);
@@ -112,7 +112,7 @@ public class Init extends Canvas implements Runnable {
         }
     }
 
-    public void render() {
+    public void render(Graphics g) {
 
     }
 
