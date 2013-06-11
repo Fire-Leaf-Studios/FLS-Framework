@@ -10,6 +10,8 @@ import fls.engine.main.Init;
 
 public class Sprites {
 
+    private static BufferedImage[][] customText;
+
     public static BufferedImage load(String name) {
         try {
             BufferedImage org = ImageIO.read(Sprites.class.getResource(name));
@@ -78,7 +80,11 @@ public class Sprites {
     };
 
     public static void drawWString(String string, Graphics g, int x, int y) {
-        BufferedImage[][] textw = split(load("/WText.png"), 6, 6);
+        BufferedImage[][] textw = null;
+        if (customText == null)
+            textw = split(load("/WText.png"), 6, 6);
+        else
+            textw = customText;
         string = string.toUpperCase();
         for (int i = 0; i < string.length(); i++) {
             char ch = string.charAt(i);
@@ -93,7 +99,11 @@ public class Sprites {
     }
 
     public static void drawBString(String string, Graphics g, int x, int y) {
-        BufferedImage[][] textb = split(load("/BText.png"), 6, 6);
+        BufferedImage[][] textb = null;
+        if (customText == null)
+            textb = split(load("/BText.png"), 6, 6);
+        else
+            textb = customText;
         string = string.toUpperCase();
         for (int i = 0; i < string.length(); i++) {
             char ch = string.charAt(i);
@@ -111,5 +121,11 @@ public class Sprites {
         g.setColor(c);
         g.fillRect(0, 0, i.getWidth(), i.getHeight());
         g.dispose();
+    }
+
+    public void setCustomText(BufferedImage img, int xsplit, int ysplit) {
+        if (img == null)
+            throw new RuntimeException("could not find : " + img);
+        customText = split(img, xsplit, ysplit);
     }
 }
