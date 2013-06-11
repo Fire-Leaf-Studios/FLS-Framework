@@ -95,7 +95,6 @@ public class Sprites {
                 }
             }
         }
-        g.dispose();
     }
 
     public static void drawBString(String string, Graphics g, int x, int y) {
@@ -114,13 +113,11 @@ public class Sprites {
                 }
             }
         }
-        g.dispose();
     }
 
     public static void fillScreen(Init i, Graphics g, Color c) {
         g.setColor(c);
         g.fillRect(0, 0, i.getWidth(), i.getHeight());
-        g.dispose();
     }
 
     public void setCustomText(BufferedImage img, int xsplit, int ysplit) {
