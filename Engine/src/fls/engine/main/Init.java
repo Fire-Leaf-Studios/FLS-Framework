@@ -1,10 +1,13 @@
 package fls.engine.main;
 
 import java.awt.Canvas;
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
 import fls.engine.main.art.Sprites;
@@ -12,8 +15,8 @@ import fls.engine.main.art.Sprites;
 @SuppressWarnings("serial")
 public class Init extends Canvas implements Runnable {
 
-    public static int width = 220;
-    public static int height = width / 9 * 12;
+    public static int width = 400;
+    public static int height = width / 12 * 9;
     public Input input;
     private boolean running = false;
     private BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
@@ -21,12 +24,13 @@ public class Init extends Canvas implements Runnable {
     public Thread thread;
     public String title;
     private boolean started = false;
+    private boolean showFPS = false;
     private int ticks = 0;
+    public int exframes;
     public final String version = "0.2";
 
     public Init() {
-        setTitle("Default Title");
-        setWidth(400);
+        setTitle("Use setTitle('name')");
         setSize(width, height);
         setVisible(true);
         addKeyListener(input);
@@ -68,8 +72,10 @@ public class Init extends Canvas implements Runnable {
             }
             if (System.currentTimeMillis() - lastTimer >= 1000) {
                 lastTimer += 1000;
-                System.out.println("Frames : " + frames + " Ticks : " + ticks);
-                setTitle("LD 26 <->  warm up : " + frames);
+                exframes = frames;
+                if (showFPS) {
+                    System.out.println("Frames : " + frames + " Ticks : " + ticks);
+                }
                 frames = 0;
                 ticks = 0;
             }
@@ -104,7 +110,15 @@ public class Init extends Canvas implements Runnable {
     }
 
     private void splash(Graphics g) {
-        g.drawImage(Sprites.splash, 0, 0, getWidth(), getHeight(), null);
+        BufferedImage img = null;
+        try {
+            img = ImageIO.read(Init.class.getResource("/Splash.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        g.drawImage(img, 0, 0, getWidth(), getHeight(), null);
+        String msg = "Version :" + version;
+        Sprites.drawWString(msg, g, (getWidth() / 2) - msg.length() * 2, getHeight() - 75);
         if (ticks > 60 * 4) {
             g.clearRect(0, 0, getWidth(), getHeight());
             started = true;
@@ -113,7 +127,10 @@ public class Init extends Canvas implements Runnable {
     }
 
     public void render(Graphics g) {
-
+        g.setColor(Color.BLACK);
+        g.fillRect(0, 0, getWidth(), getHeight());
+        String msg = "You haven't used render yet";
+        Sprites.drawWString(msg, g, width / 2 - msg.length() - 40, height / 2 + 3);
     }
 
     public void start() {
@@ -127,6 +144,7 @@ public class Init extends Canvas implements Runnable {
     public void stop() {
         if (!running)
             return;
+        running = false;
         try {
             thread.join();
         } catch (InterruptedException e) {
@@ -136,16 +154,60 @@ public class Init extends Canvas implements Runnable {
         System.exit(3);
     }
 
+    /**
+     * 
+     * Used to set the title of the frame
+     * 
+     * @param title
+     */
     public void setTitle(String title) {
         this.title = title;
     }
 
+    /**
+     * Used to set the width of the frame the height is also used off this e.g.<br>
+     * height = width / 9 * 12
+     * 
+     * @param width
+     */
     public void setWidth(int width) {
         Init.width = width;
     }
 
+    public void alterSize(int width, int height) {
+           setSize(width, height);
+    }
+
+    public void alterSize(int width) {
+        this.setSize(width, width / 12 * 9);
+    }
+
+    /**
+     * Sets the icon of the frame
+     * 
+     * @param img
+     */
     public void setIcon(BufferedImage img) {
         this.icon = img;
+    }
+
+    /**
+     * 
+     * use if you want the FPS to be outputed to the System.out stream
+     * 
+     * @param show
+     */
+    public void showFPS(boolean show) {
+        showFPS = show;
+    }
+
+    /**
+     * can be used to set the current FPS to a variable
+     * 
+     * @return
+     */
+    public int getFPS() {
+        return exframes;
     }
 
     public static void main(String[] args) {

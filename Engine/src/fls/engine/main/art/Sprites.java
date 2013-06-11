@@ -1,15 +1,14 @@
 package fls.engine.main.art;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
 import javax.imageio.ImageIO;
 
-public class Sprites {
+import fls.engine.main.Init;
 
-    public static final BufferedImage splash = load("/Splash.png");
-    public static final BufferedImage[][] textw = split(load("/WText.png"), 6, 6);
-    public static final BufferedImage[][] textb = split(load("/BText.png"), 6, 6);
+public class Sprites {
 
     public static BufferedImage load(String name) {
         try {
@@ -63,11 +62,23 @@ public class Sprites {
         return res;
     }
 
+    public static void renderMultiple(BufferedImage image, Graphics g, int amount, int x, int y, int spaceBetween, boolean hoz) {
+        for (int i = 0; i < amount; i++) {
+            if (hoz) {
+                g.drawImage(image, x + spaceBetween * i, y, null);
+            } else {
+                g.drawImage(image, x, y + spaceBetween * i, null);
+
+            }
+        }
+    }
+
     private static String[] chars = {
-            "ABCDEFGHIJKLMNOPQRSTUVWXYZ","!?[]()\"'£<>:;+-=0123456789","/\\.,"
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "!?[]()\"'£<>:;+-=0123456789", "/\\.,"
     };
 
     public static void drawWString(String string, Graphics g, int x, int y) {
+        BufferedImage[][] textw = split(load("/WText.png"), 6, 6);
         string = string.toUpperCase();
         for (int i = 0; i < string.length(); i++) {
             char ch = string.charAt(i);
@@ -78,9 +89,11 @@ public class Sprites {
                 }
             }
         }
+        g.dispose();
     }
 
     public static void drawBString(String string, Graphics g, int x, int y) {
+        BufferedImage[][] textb = split(load("/BText.png"), 6, 6);
         string = string.toUpperCase();
         for (int i = 0; i < string.length(); i++) {
             char ch = string.charAt(i);
@@ -91,5 +104,12 @@ public class Sprites {
                 }
             }
         }
+        g.dispose();
+    }
+
+    public static void fillScreen(Init i, Graphics g, Color c) {
+        g.setColor(c);
+        g.fillRect(0, 0, i.getWidth(), i.getHeight());
+        g.dispose();
     }
 }
