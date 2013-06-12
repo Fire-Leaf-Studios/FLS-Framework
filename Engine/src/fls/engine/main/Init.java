@@ -11,6 +11,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
 import fls.engine.main.art.Sprites;
+import fls.engine.main.input.Input;
 
 @SuppressWarnings("serial")
 public class Init extends Canvas implements Runnable {
