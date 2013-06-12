@@ -9,8 +9,9 @@ import javax.imageio.ImageIO;
 import fls.engine.main.Init;
 
 public class Sprites {
-
-    private static BufferedImage[][] customText;
+    
+    private static final BufferedImage[][] WText = split(load("/WText.png"), 6, 6);
+    private static final BufferedImage[][] BText = split(load("/BText.png"), 6, 6);
 
     public static BufferedImage load(String name) {
         try {
@@ -80,36 +81,26 @@ public class Sprites {
     };
 
     public static void drawWString(String string, Graphics g, int x, int y) {
-        BufferedImage[][] textw = null;
-        if (customText == null)
-            textw = split(load("/WText.png"), 6, 6);
-        else
-            textw = customText;
         string = string.toUpperCase();
         for (int i = 0; i < string.length(); i++) {
             char ch = string.charAt(i);
             for (int ys = 0; ys < chars.length; ys++) {
                 int xs = chars[ys].indexOf(ch);
                 if (xs >= 0) {
-                    g.drawImage(textw[xs][ys], x + i * 6, y, null);
+                    g.drawImage(WText[xs][ys], x + i * 6, y, null);
                 }
             }
         }
     }
 
     public static void drawBString(String string, Graphics g, int x, int y) {
-        BufferedImage[][] textb = null;
-        if (customText == null)
-            textb = split(load("/BText.png"), 6, 6);
-        else
-            textb = customText;
         string = string.toUpperCase();
         for (int i = 0; i < string.length(); i++) {
             char ch = string.charAt(i);
             for (int ys = 0; ys < chars.length; ys++) {
                 int xs = chars[ys].indexOf(ch);
                 if (xs >= 0) {
-                    g.drawImage(textb[xs][ys], x + i * 6, y, null);
+                    g.drawImage(BText[xs][ys], x + i * 6, y, null);
                 }
             }
         }
@@ -118,11 +109,5 @@ public class Sprites {
     public static void fillScreen(Init i, Graphics g, Color c) {
         g.setColor(c);
         g.fillRect(0, 0, i.getWidth(), i.getHeight());
-    }
-
-    public void setCustomText(BufferedImage img, int xsplit, int ysplit) {
-        if (img == null)
-            throw new RuntimeException("could not find : " + img);
-        customText = split(img, xsplit, ysplit);
     }
 }

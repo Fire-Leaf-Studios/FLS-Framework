@@ -4,16 +4,18 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.List;
 
 import fls.engine.main.Init;
 
-public class Input implements KeyListener, MouseListener {
+public class Input implements KeyListener, MouseListener, MouseMotionListener {
 
     public Input(Init game) {
         game.addKeyListener(this);
         game.addMouseListener(this);
+        game.addMouseMotionListener(this);
     }
 
     public class Key {
@@ -34,22 +36,31 @@ public class Input implements KeyListener, MouseListener {
                 numTimesPressed++;
         }
     }
-    
-    public class Mouse{
-        private int numTimesClicked =0;
+
+    public class Mouse {
+        private int numTimesClicked = 0;
         private boolean clicked = false;
-        
-        public int getNumTimesPressed(){
+        private int x, y;
+
+        public int getNumTimesPressed() {
             return numTimesClicked;
         }
-        
-        public boolean isClicked(){
+
+        public boolean isClicked() {
             return clicked;
         }
-        
-        public void toggle(boolean isClicked){
+
+        public int getX() {
+            return x;
+        }
+
+        public int getY() {
+            return y;
+        }
+
+        public void toggle(boolean isClicked) {
             clicked = isClicked;
-            if(isClicked)
+            if (isClicked)
                 numTimesClicked++;
         }
     }
@@ -70,11 +81,12 @@ public class Input implements KeyListener, MouseListener {
     public Key enter = new Key();
     public Key esc = new Key();
     public Key space = new Key();
-    
+
     public List<Mouse> mb = new ArrayList<Mouse>();
-    
-    public Mouse lb = new Mouse();
-    public Mouse rb = new Mouse();
+
+    public Mouse leftMouseButton = new Mouse();
+    public Mouse rightMouseButton = new Mouse();
+    public Mouse mouse = new Mouse(); // the ONLY mouse the get X & Y;
 
     public void keyPressed(KeyEvent e) {
         toggleKey(e.getKeyCode(), true);
@@ -127,17 +139,26 @@ public class Input implements KeyListener, MouseListener {
     }
 
     public void mousePressed(MouseEvent e) {
-        toggleMouse(e.getButton(),true);
+        toggleMouse(e.getButton(), true);
     }
 
     public void mouseReleased(MouseEvent e) {
-        toggleMouse(e.getButton(),false);
+        toggleMouse(e.getButton(), false);
     }
-    
-    public void toggleMouse(int mouseButton , boolean isClicked){
-        if(mouseButton == MouseEvent.BUTTON1)
-            lb.toggle(isClicked);
-        if(mouseButton == MouseEvent.BUTTON3)
-            rb.toggle(isClicked);
+
+    public void toggleMouse(int mouseButton, boolean isClicked) {
+        if (mouseButton == MouseEvent.BUTTON1)
+            leftMouseButton.toggle(isClicked);
+        if (mouseButton == MouseEvent.BUTTON3)
+            rightMouseButton.toggle(isClicked);
+    }
+
+    public void mouseDragged(MouseEvent e) {
+
+    }
+
+    public void mouseMoved(MouseEvent e) {
+        mouse.x = e.getX();
+        mouse.y = e.getY();
     }
 }
