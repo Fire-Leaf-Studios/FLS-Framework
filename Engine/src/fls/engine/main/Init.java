@@ -28,7 +28,7 @@ public class Init extends Canvas implements Runnable {
     private boolean showFPS = false;
     private int ticks = 0;
     public int exframes;
-    public final String version = "0.2";
+    public final String version = "0.3";
 
     public Init() {
         setTitle("Use setTitle('name')");

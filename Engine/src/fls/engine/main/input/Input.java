@@ -13,6 +13,7 @@ public class Input implements KeyListener, MouseListener {
 
     public Input(Init game) {
         game.addKeyListener(this);
+        game.addMouseListener(this);
     }
 
     public class Key {
@@ -42,7 +43,7 @@ public class Input implements KeyListener, MouseListener {
             return numTimesClicked;
         }
         
-        public boolean isClick(){
+        public boolean isClicked(){
             return clicked;
         }
         
@@ -53,7 +54,7 @@ public class Input implements KeyListener, MouseListener {
         }
     }
 
-    public void releaseAll() {
+    public void releaseAllKeys() {
         for (int i = 0; i < keys.size(); i++) {
             keys.get(i).pressed = false;
         }
@@ -136,7 +137,7 @@ public class Input implements KeyListener, MouseListener {
     public void toggleMouse(int mouseButton , boolean isClicked){
         if(mouseButton == MouseEvent.BUTTON1)
             lb.toggle(isClicked);
-        if(mouseButton == MouseEvent.BUTTON2)
+        if(mouseButton == MouseEvent.BUTTON3)
             rb.toggle(isClicked);
     }
 }
