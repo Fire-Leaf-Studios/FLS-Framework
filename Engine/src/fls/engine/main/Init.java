@@ -18,23 +18,22 @@ public class Init extends Canvas implements Runnable {
 
     public static int width = 400;
     public static int height = width / 12 * 9;
-    public Input input = new Input(this, 2);
+    public Input input;
     private boolean running = false;
     private BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
     public BufferedImage icon;
     public Thread thread;
     public String title;
     private boolean started = false;
-    private boolean showFPS = false;
+    private boolean printFPS = false;
     private int ticks = 0;
     public int exframes;
     public final String version = "0.3";
 
     public Init() {
-        setTitle("Use setTitle('name')");
+        setTitle("Default title");
         setSize(width, height);
         setVisible(true);
-        addKeyListener(input);
     }
 
     public void run() {
@@ -74,7 +73,7 @@ public class Init extends Canvas implements Runnable {
             if (System.currentTimeMillis() - lastTimer >= 1000) {
                 lastTimer += 1000;
                 exframes = frames;
-                if (showFPS) {
+                if (printFPS) {
                     System.out.println("Frames : " + frames + " Ticks : " + ticks);
                 }
                 frames = 0;
@@ -128,7 +127,7 @@ public class Init extends Canvas implements Runnable {
         g.setColor(Color.BLACK);
         g.fillRect(0, 0, getWidth(), getHeight());
         String msg = "You haven't used render yet";
-        Sprites.drawWString(msg, g, width / 2 - msg.length() - 50, height / 2 + 3);
+        Sprites.drawWString(msg, g, width / 2 - msg.length() * 2 - 20, height / 2 + 3);
     }
 
     public void start() {
@@ -194,7 +193,7 @@ public class Init extends Canvas implements Runnable {
      * @param show
      */
     public void showFPS(boolean show) {
-        showFPS = show;
+        printFPS = show;
     }
 
     /**
@@ -214,7 +213,9 @@ public class Init extends Canvas implements Runnable {
         frame.setVisible(true);
         frame.setDefaultCloseOperation(3);
         frame.setLocationRelativeTo(null);
-        frame.setIconImage(game.image);
+        if (game.icon != null) {
+            frame.setIconImage(game.icon);
+        }
         game.start();
     }
 }
