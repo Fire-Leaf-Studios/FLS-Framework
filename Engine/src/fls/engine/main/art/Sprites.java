@@ -13,16 +13,21 @@ public class Sprites {
     private static final BufferedImage[][] WText = split(load("/WText.png"), 6, 6);
     private static final BufferedImage[][] BText = split(load("/BText.png"), 6, 6);
 
-    public static BufferedImage load(String name) {
+    /**
+     * 
+     * @param loacation - this is the location that the image is stored
+     * @return BufferedImage
+     */
+    public static BufferedImage load(String loacation) {
         try {
-            BufferedImage org = ImageIO.read(Sprites.class.getResource(name));
+            BufferedImage org = ImageIO.read(Sprites.class.getResource(loacation));
             BufferedImage res = new BufferedImage(org.getWidth(), org.getHeight(), BufferedImage.TYPE_INT_ARGB);
             Graphics g = res.getGraphics();
             g.drawImage(org, 0, 0, null);
             g.dispose();
             return res;
         } catch (Exception e) {
-            throw new RuntimeException(name + " : can't be found");
+            throw new RuntimeException(loacation + " : can't be found");
         }
     }
 

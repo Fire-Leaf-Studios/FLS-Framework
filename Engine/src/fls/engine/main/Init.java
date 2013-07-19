@@ -117,7 +117,7 @@ public class Init extends Canvas implements Runnable {
         String msg = "Version :" + version;
         Sprites.drawWString(msg, g, (getWidth() / 2) - msg.length() * 2, getHeight() - 75);
         if (ticks > 60 * 4) {
-            g.clearRect(0, 0, getWidth(), getHeight());
+            Sprites.fillScreen(this, g, Color.black);
             started = true;
             ticks = 0;
         }
@@ -125,7 +125,7 @@ public class Init extends Canvas implements Runnable {
 
     public void render(Graphics g) {
         g.setColor(Color.BLACK);
-        g.fillRect(0, 0, getWidth(), getHeight());
+        Sprites.fillScreen(this, g, Color.black);
         String msg = "You haven't used render yet";
         Sprites.drawWString(msg, g, width / 2 - msg.length() * 2 - 20, height / 2 + 3);
     }
@@ -163,6 +163,7 @@ public class Init extends Canvas implements Runnable {
      * Used to set the width of the frame the height is also used off this e.g.<br>
      * height = width / 9 * 12
      * 
+     * @
      * @param width
      */
     public void setWidth(int width) {
