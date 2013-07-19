@@ -18,7 +18,7 @@ public class Init extends Canvas implements Runnable {
 
     public static int width = 400;
     public static int height = width / 12 * 9;
-    public Input input;
+    public Input input = new Input(this, 2);
     private boolean running = false;
     private BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
     public BufferedImage icon;
@@ -86,8 +86,7 @@ public class Init extends Canvas implements Runnable {
 
     private void initTick() {
         tick();
-        if (!started)
-            ticks++;
+        if (!started) ticks++;
     }
 
     public void tick() {
@@ -101,10 +100,8 @@ public class Init extends Canvas implements Runnable {
             return;
         }
         Graphics g = bs.getDrawGraphics();
-        if (started)
-            render(g);
-        else
-            splash(g);
+        if (started) render(g);
+        else splash(g);
         g.drawImage(image, 0, 0, getWidth(), getHeight(), null);
         g.dispose();
         bs.show();
@@ -131,20 +128,18 @@ public class Init extends Canvas implements Runnable {
         g.setColor(Color.BLACK);
         g.fillRect(0, 0, getWidth(), getHeight());
         String msg = "You haven't used render yet";
-        Sprites.drawWString(msg, g, width / 2 - msg.length() - 40, height / 2 + 3);
+        Sprites.drawWString(msg, g, width / 2 - msg.length() - 50, height / 2 + 3);
     }
 
     public void start() {
-        if (running)
-            return;
+        if (running) return;
         thread = new Thread(this, this.title);
         thread.start();
         running = true;
     }
 
     public void stop() {
-        if (!running)
-            return;
+        if (!running) return;
         running = false;
         try {
             thread.join();
@@ -176,7 +171,7 @@ public class Init extends Canvas implements Runnable {
     }
 
     public void alterSize(int width, int height) {
-           setSize(width, height);
+        setSize(width, height);
     }
 
     public void alterSize(int width) {

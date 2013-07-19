@@ -12,10 +12,25 @@ import fls.engine.main.Init;
 
 public class Input implements KeyListener, MouseListener, MouseMotionListener {
 
-    public Input(Init game) {
-        game.addKeyListener(this);
-        game.addMouseListener(this);
-        game.addMouseMotionListener(this);
+    public Input(Init game, int type) {
+        switch (type) {
+        case 0:
+            game.addKeyListener(this);
+            break;
+        case 1:
+            game.addMouseListener(this);
+            game.addMouseMotionListener(this);
+            break;
+        case 2:
+            game.addKeyListener(this);
+            game.addMouseListener(this);
+            game.addMouseMotionListener(this);
+            break;
+        default:
+            System.err.println("Not a valid type entered");
+            break;
+
+        }
     }
 
     public class Key {
@@ -32,8 +47,7 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
 
         public void toggle(boolean isPressed) {
             pressed = isPressed;
-            if (isPressed)
-                numTimesPressed++;
+            if (isPressed) numTimesPressed++;
         }
     }
 
@@ -60,8 +74,7 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
 
         public void toggle(boolean isClicked) {
             clicked = isClicked;
-            if (isClicked)
-                numTimesClicked++;
+            if (isClicked) numTimesClicked++;
         }
     }
 
@@ -147,10 +160,8 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
     }
 
     public void toggleMouse(int mouseButton, boolean isClicked) {
-        if (mouseButton == MouseEvent.BUTTON1)
-            leftMouseButton.toggle(isClicked);
-        if (mouseButton == MouseEvent.BUTTON3)
-            rightMouseButton.toggle(isClicked);
+        if (mouseButton == MouseEvent.BUTTON1) leftMouseButton.toggle(isClicked);
+        if (mouseButton == MouseEvent.BUTTON3) rightMouseButton.toggle(isClicked);
     }
 
     public void mouseDragged(MouseEvent e) {
