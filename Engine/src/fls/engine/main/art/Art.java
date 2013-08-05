@@ -8,19 +8,20 @@ import javax.imageio.ImageIO;
 
 import fls.engine.main.Init;
 
-public class Sprites {
-    
+public class Art {
+
     private static final BufferedImage[][] WText = split(load("/WText.png"), 6, 6);
     private static final BufferedImage[][] BText = split(load("/BText.png"), 6, 6);
 
     /**
      * 
-     * @param loacation - this is the location that the image is stored
+     * @param loacation
+     *            - this is the location that the image is loaded from
      * @return BufferedImage
      */
     public static BufferedImage load(String loacation) {
         try {
-            BufferedImage org = ImageIO.read(Sprites.class.getResource(loacation));
+            BufferedImage org = ImageIO.read(Art.class.getResource(loacation));
             BufferedImage res = new BufferedImage(org.getWidth(), org.getHeight(), BufferedImage.TYPE_INT_ARGB);
             Graphics g = res.getGraphics();
             g.drawImage(org, 0, 0, null);
@@ -73,9 +74,9 @@ public class Sprites {
     public static void renderMultiple(BufferedImage image, Graphics g, int amount, int x, int y, int spaceBetween, boolean hoz) {
         for (int i = 0; i < amount; i++) {
             if (hoz) {
-                g.drawImage(image, x + spaceBetween * i, y, null);
+                g.drawImage(image, x + (spaceBetween * i), y, null);
             } else {
-                g.drawImage(image, x, y + spaceBetween * i, null);
+                g.drawImage(image, x, y + (spaceBetween * i), null);
 
             }
         }

@@ -5,12 +5,11 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
-import fls.engine.main.art.Sprites;
+import fls.engine.main.art.Art;
 import fls.engine.main.input.Input;
 
 @SuppressWarnings("serial")
@@ -28,7 +27,7 @@ public class Init extends Canvas implements Runnable {
     private boolean printFPS = false;
     private int ticks = 0;
     public int exframes;
-    public final String version = "0.3";
+    public final String version = "0.3.2";
 
     public Init() {
         setTitle("Default title");
@@ -83,7 +82,7 @@ public class Init extends Canvas implements Runnable {
         stop();
     }
 
-    private void initTick() {
+    private final void initTick() {
         tick();
         if (!started) ticks++;
     }
@@ -92,7 +91,7 @@ public class Init extends Canvas implements Runnable {
 
     }
 
-    private void initRender() {
+    private final void initRender() {
         BufferStrategy bs = getBufferStrategy();
         if (bs == null) {
             createBufferStrategy(3);
@@ -108,26 +107,26 @@ public class Init extends Canvas implements Runnable {
 
     private void splash(Graphics g) {
         BufferedImage img = null;
+        Art.fillScreen(this, g, Color.black);
         try {
             img = ImageIO.read(Init.class.getResource("/Splash.png"));
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        g.drawImage(img, 0, 0, getWidth(), getHeight(), null);
+        g.drawImage(img, (width / 2) - (img.getWidth() / 2), (height / 2) - (img.getHeight() / 2), img.getWidth(), img.getHeight(), null);
         String msg = "Version :" + version;
-        Sprites.drawWString(msg, g, (getWidth() / 2) - msg.length() * 2, getHeight() - 75);
+        Art.drawWString(msg, g, (getWidth() / 2) - msg.length() * 2, getHeight() - 75);
         if (ticks > 60 * 4) {
-            Sprites.fillScreen(this, g, Color.black);
+            Art.fillScreen(this, g, Color.black);
             started = true;
             ticks = 0;
         }
     }
 
     public void render(Graphics g) {
-        g.setColor(Color.BLACK);
-        Sprites.fillScreen(this, g, Color.black);
+        Art.fillScreen(this, g, Color.black);
         String msg = "You haven't used render yet";
-        Sprites.drawWString(msg, g, width / 2 - msg.length() * 2 - 20, height / 2 + 3);
+        Art.drawWString(msg, g, width / 2 - msg.length() * 2 - 20, height / 2 + 3);
     }
 
     public void start() {
@@ -146,7 +145,39 @@ public class Init extends Canvas implements Runnable {
             e.printStackTrace();
         }
         System.out.println("[2D Engine] created by Elliot Lee-Cerrino");
-        System.exit(3);
+        System.exit(0);
+    }
+
+    /**
+     * Replaces the old alterSize method with major improvments<br>
+     * like setting the title
+     * 
+     * @param title
+     * @param width
+     * @param height
+     */
+    public void createWindow(String title, int width, int height) {
+        this.title = title;
+        Init.width = width;
+        Init.height = height;
+        setTitle(title);
+        setSize(width, height);
+    }
+
+    /**
+     * Is the exact same method except it sets the height<br>
+     * like so.<br>
+     * height = (width / 12) * 9
+     * 
+     * @param title
+     * @param width
+     */
+    public void createWindow(String title, int width) {
+        this.title = title;
+        Init.width = width;
+        int height = Init.height = (width / 12) * 9;
+        setTitle(title);
+        setSize(width, height);
     }
 
     /**
@@ -157,25 +188,6 @@ public class Init extends Canvas implements Runnable {
      */
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    /**
-     * Used to set the width of the frame the height is also used off this e.g.<br>
-     * height = width / 9 * 12
-     * 
-     * @
-     * @param width
-     */
-    public void setWidth(int width) {
-        Init.width = width;
-    }
-
-    public void alterSize(int width, int height) {
-        setSize(width, height);
-    }
-
-    public void alterSize(int width) {
-        this.setSize(width, width / 12 * 9);
     }
 
     /**
@@ -193,8 +205,8 @@ public class Init extends Canvas implements Runnable {
      * 
      * @param show
      */
-    public void showFPS(boolean show) {
-        printFPS = show;
+    public void showFPS() {
+        printFPS = true;
     }
 
     /**
