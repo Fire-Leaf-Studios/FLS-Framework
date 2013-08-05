@@ -218,6 +218,19 @@ public class Init extends Canvas implements Runnable {
         return exframes;
     }
 
+    /**
+     * Checks that there is a BufferStrategy<br>
+     * if there isn't one then it will return false
+     * 
+     * @return true -if found<br>
+     *         false -if not found
+     */
+    public boolean checkBS() {
+        BufferStrategy bs = getBufferStrategy();
+        if (bs == null) return false;
+        return true;
+    }
+
     public static void main(String[] args) {
         Init game = new Init();
         JFrame frame = new JFrame(game.title);
