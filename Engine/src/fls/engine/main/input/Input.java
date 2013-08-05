@@ -56,7 +56,7 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
         private boolean clicked = false;
         private int x, y;
 
-        public int getNumTimesPressed() {
+        public int getNumTimesClicked() {
             return numTimesClicked;
         }
 
