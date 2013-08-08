@@ -83,7 +83,7 @@ public class Init extends Canvas implements Runnable {
     }
 
     private final void initTick() {
-        tick();
+        if (started) tick();
         if (!started) ticks++;
     }
 
