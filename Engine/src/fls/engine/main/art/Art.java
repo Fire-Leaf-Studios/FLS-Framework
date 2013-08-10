@@ -2,6 +2,7 @@ package fls.engine.main.art;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 
 import javax.imageio.ImageIO;
@@ -10,6 +11,7 @@ import fls.engine.main.Init;
 
 public class Art {
 
+    private static int pref = -1;
     private static final BufferedImage[][] WText = split(load("/WText.png"), 6, 6);
     private static final BufferedImage[][] BText = split(load("/BText.png"), 6, 6);
 
@@ -86,27 +88,27 @@ public class Art {
             "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "!?[]()\"'£<>:;+-=0123456789", "/\\.,"
     };
 
-    public static void drawWString(String string, Graphics g, int x, int y) {
+    public static void drawString(String string, Graphics g, int x, int y) {
         string = string.toUpperCase();
         for (int i = 0; i < string.length(); i++) {
             char ch = string.charAt(i);
             for (int ys = 0; ys < chars.length; ys++) {
                 int xs = chars[ys].indexOf(ch);
                 if (xs >= 0) {
-                    g.drawImage(WText[xs][ys], x + i * 6, y, null);
+                    g.drawImage(pref == 1 ? WText[xs][ys] : BText[xs][ys], x + i * 6, y, null);
                 }
             }
         }
     }
 
-    public static void drawBString(String string, Graphics g, int x, int y) {
-        string = string.toUpperCase();
-        for (int i = 0; i < string.length(); i++) {
-            char ch = string.charAt(i);
+    public static void drawScaledText(String msg, Graphics g, int x, int y, int scale) {
+        msg = msg.toUpperCase();
+        for (int i = 0; i < msg.length(); i++) {
+            char ch = msg.charAt(i);
             for (int ys = 0; ys < chars.length; ys++) {
                 int xs = chars[ys].indexOf(ch);
                 if (xs >= 0) {
-                    g.drawImage(BText[xs][ys], x + i * 6, y, null);
+                    g.drawImage(pref == 1 ? WText[xs][ys].getScaledInstance(6 * scale, 6 * scale, Image.SCALE_AREA_AVERAGING) : BText[xs][ys].getScaledInstance(6 * scale, 6 * scale, Image.SCALE_AREA_AVERAGING), x + i * 6 * scale, y, null);
                 }
             }
         }
@@ -115,5 +117,10 @@ public class Art {
     public static void fillScreen(Init i, Graphics g, Color c) {
         g.setColor(c);
         g.fillRect(0, 0, i.getWidth(), i.getHeight());
+    }
+
+    public static void setTextCol(int col) {
+        if (col == 0xFFFFFF) pref = 1;
+        if (col == 0x000000) pref = -1;
     }
 }

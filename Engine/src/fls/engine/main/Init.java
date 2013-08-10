@@ -30,6 +30,7 @@ public class Init extends Canvas implements Runnable {
     public final String version = "0.3.2";
 
     public Init() {
+        Art.setTextCol(0xFFFFFF);
         setTitle("Default title");
         setSize(width, height);
         setVisible(true);
@@ -115,7 +116,7 @@ public class Init extends Canvas implements Runnable {
         }
         g.drawImage(img, (width / 2) - (img.getWidth() / 2), (height / 2) - (img.getHeight() / 2), img.getWidth(), img.getHeight(), null);
         String msg = "Version :" + version;
-        Art.drawWString(msg, g, (getWidth() / 2) - msg.length() * 2, getHeight() - 75);
+        Art.drawString(msg, g, (getWidth() / 2) - msg.length() * 2, getHeight() - 75);
         if (ticks > 60 * 4) {
             Art.fillScreen(this, g, Color.black);
             started = true;
@@ -126,7 +127,7 @@ public class Init extends Canvas implements Runnable {
     public void render(Graphics g) {
         Art.fillScreen(this, g, Color.black);
         String msg = "You haven't used render yet";
-        Art.drawWString(msg, g, width / 2 - msg.length() * 2 - 20, height / 2 + 3);
+        Art.drawString(msg, g, width / 2 - msg.length() * 2 - 20, height / 2 + 3);
     }
 
     public void start() {
