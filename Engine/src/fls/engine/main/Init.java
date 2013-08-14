@@ -17,6 +17,7 @@ public class Init extends Canvas implements Runnable {
 
     public static int width = 400;
     public static int height = width / 12 * 9;
+    public static int scale = 1;
     public Input input;
     private boolean running = false;
     private BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
@@ -101,7 +102,7 @@ public class Init extends Canvas implements Runnable {
         Graphics g = bs.getDrawGraphics();
         if (started) render(g);
         else splash(g);
-        g.drawImage(image, 0, 0, getWidth(), getHeight(), null);
+        g.drawImage(image, 0, 0, width * scale, height * scale, 0, 0, width, height, null);
         g.dispose();
         bs.show();
     }
@@ -114,7 +115,7 @@ public class Init extends Canvas implements Runnable {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        g.drawImage(img, (width / 2) - (img.getWidth() / 2), (height / 2) - (img.getHeight() / 2), img.getWidth(), img.getHeight(), null);
+        g.drawImage(img, (width * scale / 2) - (img.getWidth() / 2), (height * scale / 2) - (img.getHeight() / 2), img.getWidth(), img.getHeight(), null);
         String msg = "Version :" + version;
         Art.drawString(msg, g, (getWidth() / 2) - msg.length() * 2, getHeight() - 75);
         if (ticks > 60 * 4) {
@@ -127,7 +128,7 @@ public class Init extends Canvas implements Runnable {
     public void render(Graphics g) {
         Art.fillScreen(this, g, Color.black);
         String msg = "You haven't used render yet";
-        Art.drawString(msg, g, width / 2 - msg.length() * 2 - 20, height / 2 + 3);
+        Art.drawString(msg, g, width * scale / 2 - msg.length() * 2 - 20, height * scale / 2 + 3);
     }
 
     public void start() {
@@ -162,7 +163,16 @@ public class Init extends Canvas implements Runnable {
         Init.width = width;
         Init.height = height;
         setTitle(title);
-        setSize(width, height);
+        setSize(width * scale, height * scale);
+    }
+
+    /**
+     * Use this to change what scale the window is
+     * 
+     * @param scale
+     */
+    public void setScale(int scale) {
+        Init.scale = scale;
     }
 
     /**
@@ -178,7 +188,7 @@ public class Init extends Canvas implements Runnable {
         Init.width = width;
         int height = Init.height = (width / 12) * 9;
         setTitle(title);
-        setSize(width, height);
+        setSize(width * scale, height * scale);
     }
 
     /**
