@@ -12,6 +12,8 @@ import fls.engine.main.Init;
 
 public class Input implements KeyListener, MouseListener, MouseMotionListener {
 
+    public static int KEYS = 0, MOUSE = 1, BOTH = 2;
+
     public Input(Init game, int type) {
         switch (type) {
         case 0:

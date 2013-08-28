@@ -14,23 +14,24 @@ public class Art {
     private static int pref = -1;
     private static final BufferedImage[][] WText = split(load("/WText.png"), 6, 6);
     private static final BufferedImage[][] BText = split(load("/BText.png"), 6, 6);
+    private static String rootPath;
 
     /**
      * 
-     * @param loacation
+     * @param location
      *            - this is the location that the image is loaded from
      * @return BufferedImage
      */
-    public static BufferedImage load(String loacation) {
+    public static BufferedImage load(String location) {
         try {
-            BufferedImage org = ImageIO.read(Art.class.getResource(loacation));
+            BufferedImage org = ImageIO.read(Art.class.getResource(rootPath != null ? (rootPath + "/") + location : location));
             BufferedImage res = new BufferedImage(org.getWidth(), org.getHeight(), BufferedImage.TYPE_INT_ARGB);
             Graphics g = res.getGraphics();
             g.drawImage(org, 0, 0, null);
             g.dispose();
             return res;
         } catch (Exception e) {
-            throw new RuntimeException(loacation + " : can't be found");
+            throw new RuntimeException(location + " : can't be found");
         }
     }
 
@@ -119,8 +120,12 @@ public class Art {
         g.fillRect(0, 0, i.getWidth(), i.getHeight());
     }
 
-    public static void setTextCol(int col) {
-        if (col == 0xFFFFFF) pref = 1;
-        if (col == 0x000000) pref = -1;
+    public static void setTextCol(Color col) {
+        if (col == Color.white) pref = 1;
+        if (col == Color.black) pref = -1;
+    }
+
+    public static void setRootPath(String path) {
+        Art.rootPath = path;
     }
 }

@@ -2,11 +2,11 @@ package fls.engine.main;
 
 import java.awt.Canvas;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 
-import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
 import fls.engine.main.art.Art;
@@ -15,32 +15,38 @@ import fls.engine.main.input.Input;
 @SuppressWarnings("serial")
 public class Init extends Canvas implements Runnable {
 
-    public static int width = 400;
-    public static int height = width / 12 * 9;
+    public static int width = 500;
+    public static int height;
     public static int scale = 1;
     public Input input;
     private boolean running = false;
-    private BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+    private BufferedImage image;
     public BufferedImage icon;
     public Thread thread;
     public String title;
     private boolean started = false;
     private boolean printFPS = false;
+    private boolean skipInit = false;
     private int ticks = 0;
     public int exframes;
-    public final String version = "0.3.2";
+    public final String version = "0.3.4";
+    private String[] creators;
+    public BufferStrategy bs;
+
+    private double desTicks = 60D;
 
     public Init() {
-        Art.setTextCol(0xFFFFFF);
-        setTitle("Default title");
-        setSize(width, height);
+        setScale(1);
+        createWindow("Default window", width);
         setVisible(true);
+        showFPS();
+        image = new BufferedImage(width, height, 2);
     }
 
     public void run() {
         requestFocus();
         long lastTime = System.nanoTime();
-        double nsPerTick = 1000000000D / 60D;
+        double nsPerTick = 1000000000D / desTicks;
 
         int ticks = 0;
         int frames = 0;
@@ -85,38 +91,40 @@ public class Init extends Canvas implements Runnable {
     }
 
     private final void initTick() {
-        if (started) tick();
-        if (!started) ticks++;
-    }
-
-    public void tick() {
-
+        if (!skipInit) {
+            if (started) tick();
+            if (!started) ticks++;
+        }else{
+            tick();
+        }
     }
 
     private final void initRender() {
-        BufferStrategy bs = getBufferStrategy();
+        bs = getBufferStrategy();
         if (bs == null) {
             createBufferStrategy(3);
             return;
         }
         Graphics g = bs.getDrawGraphics();
-        if (started) render(g);
-        else splash(g);
-        g.drawImage(image, 0, 0, width * scale, height * scale, 0, 0, width, height, null);
+        if (!skipInit) {
+            if (started) render(g);
+            else splash(g);
+        } else {
+            render(g);
+        }
+        g.drawImage(image, 0, 0, width * scale, height * scale, null);
         g.dispose();
         bs.show();
     }
 
+    private BufferedImage splash;
+
     private void splash(Graphics g) {
-        BufferedImage img = null;
+        if (splash == null) splash = Art.load("/Splash.png");
         Art.fillScreen(this, g, Color.black);
-        try {
-            img = ImageIO.read(Init.class.getResource("/Splash.png"));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        g.drawImage(img, (width * scale / 2) - (img.getWidth() / 2), (height * scale / 2) - (img.getHeight() / 2), img.getWidth(), img.getHeight(), null);
+        g.drawImage(splash, (width * scale / 2) - (splash.getWidth() / 2), (height * scale / 2) - (splash.getHeight() / 2), null);
         String msg = "Version :" + version;
+        Art.setTextCol(Color.white);
         Art.drawString(msg, g, (getWidth() / 2) - msg.length() * 2, getHeight() - 75);
         if (ticks > 60 * 4) {
             Art.fillScreen(this, g, Color.black);
@@ -125,9 +133,14 @@ public class Init extends Canvas implements Runnable {
         }
     }
 
+    public void tick() {
+
+    }
+
     public void render(Graphics g) {
         Art.fillScreen(this, g, Color.black);
         String msg = "You haven't used render yet";
+        Art.setTextCol(Color.white);
         Art.drawString(msg, g, width * scale / 2 - msg.length() * 2 - 20, height * scale / 2 + 3);
     }
 
@@ -142,12 +155,37 @@ public class Init extends Canvas implements Runnable {
         if (!running) return;
         running = false;
         try {
+            postClose();
             thread.join();
+            System.exit(0);
         } catch (InterruptedException e) {
             e.printStackTrace();
+            System.exit(1);
         }
+    }
+
+    private void postClose() {
+        if (creators.length != 0) {
+            System.out.println(title + " made by:");
+            if (creators.length > 1) {
+                for (int i = 0; i < creators.length - 1; i++) {
+                    System.out.print(creators[i] + ", ");
+                }
+            }
+            System.out.println(creators[creators.length - 1] + ".");
+        }
+        System.out.println("");
         System.out.println("[2D Engine] created by Elliot Lee-Cerrino");
         System.exit(0);
+    }
+
+    /**
+     * determains how often the game updates
+     * 
+     * @param ticks
+     */
+    public void setDestieredAmtOfTicks(int ticks) {
+        desTicks = ticks;
     }
 
     /**
@@ -164,15 +202,16 @@ public class Init extends Canvas implements Runnable {
         Init.height = height;
         setTitle(title);
         setSize(width * scale, height * scale);
+        setPreferredSize(new Dimension(width * scale, height * scale));
     }
 
     /**
      * Use this to change what scale the window is
      * 
-     * @param scale
+     * @param s
      */
-    public void setScale(int scale) {
-        Init.scale = scale;
+    public void setScale(int s) {
+        scale = s;
     }
 
     /**
@@ -189,6 +228,7 @@ public class Init extends Canvas implements Runnable {
         int height = Init.height = (width / 12) * 9;
         setTitle(title);
         setSize(width * scale, height * scale);
+        setPreferredSize(new Dimension(width * scale, height * scale));
     }
 
     /**
@@ -236,15 +276,47 @@ public class Init extends Canvas implements Runnable {
      * @return true -if found<br>
      *         false -if not found
      */
-    public boolean checkBS() {
+    public boolean BSExists() {
         BufferStrategy bs = getBufferStrategy();
-        if (bs == null) return false;
+        if (bs == null) {
+            return false;
+        }
         return true;
+    }
+
+    /**
+     * replace image with a custom sied and type BufferedImage
+     * 
+     * @param x
+     * @param y
+     * @param type
+     */
+    public void useCustomBufferedImage(int x, int y, int type) {
+        BufferedImage b = new BufferedImage(x, y, type);
+        image = b;
+    }
+
+    /**
+     * use this to put your's and others names in the output stream when the game is closed
+     * 
+     * @param name
+     */
+    public final void setCreators(String... name) {
+        creators = new String[name.length];
+        for (int i = 0; i < name.length; i++) {
+            creators[i] = name[i];
+        }
+    }
+
+    public void skipInit() {
+        skipInit = true;
     }
 
     public static void main(String[] args) {
         Init game = new Init();
         JFrame frame = new JFrame(game.title);
+        // frame.setPreferredSize(new Dimension(Init.width * Init.scale, Init.height * Init.scale));
+        frame.setResizable(false);
         frame.add(game);
         frame.pack();
         frame.setVisible(true);
