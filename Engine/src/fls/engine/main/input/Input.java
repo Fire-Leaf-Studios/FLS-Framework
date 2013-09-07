@@ -17,13 +17,16 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
     public Input(Init game, int type) {
         switch (type) {
         case 0:
+            System.out.println("Added Key input");
             game.addKeyListener(this);
             break;
         case 1:
+            System.out.println("Added Mouse input");
             game.addMouseListener(this);
             game.addMouseMotionListener(this);
             break;
         case 2:
+            System.out.println("Added Key and Mouse input");
             game.addKeyListener(this);
             game.addMouseListener(this);
             game.addMouseMotionListener(this);
@@ -35,28 +38,11 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
         }
     }
 
-    public class Key {
-        private int numTimesPressed = 0;
-        private boolean pressed = false;
-
-        public int getNumTimesPressed() {
-            return numTimesPressed;
-        }
-
-        public boolean isPressed() {
-            return pressed;
-        }
-
-        public void toggle(boolean isPressed) {
-            pressed = isPressed;
-            if (isPressed) numTimesPressed++;
-        }
-    }
-
     public class Mouse {
         private int numTimesClicked = 0;
         private boolean clicked = false;
-        private int x, y;
+        private int x, y, dx, dy;
+        private boolean beingDraged = false;
 
         public int getNumTimesClicked() {
             return numTimesClicked;
@@ -74,6 +60,18 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
             return y;
         }
 
+        public int getDX() {
+            return dx;
+        }
+
+        public int getDY() {
+            return dy;
+        }
+
+        public boolean draged() {
+            return beingDraged;
+        }
+
         public void toggle(boolean isClicked) {
             clicked = isClicked;
             if (isClicked) numTimesClicked++;
@@ -81,21 +79,12 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
     }
 
     public void releaseAllKeys() {
-        for (int i = 0; i < keys.size(); i++) {
-            keys.get(i).pressed = false;
+        for (int i = 0; i < keys.length; i++) {
+            keys[i] = false;
         }
     }
 
-    public List<Key> keys = new ArrayList<Key>();
-
-    public Key up = new Key();
-    public Key down = new Key();
-    public Key left = new Key();
-    public Key right = new Key();
-    public Key shift = new Key();
-    public Key enter = new Key();
-    public Key esc = new Key();
-    public Key space = new Key();
+    public boolean[] keys = new boolean[65536];
 
     public List<Mouse> mb = new ArrayList<Mouse>();
 
@@ -104,41 +93,17 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
     public Mouse mouse = new Mouse(); // the ONLY mouse the get X & Y;
 
     public void keyPressed(KeyEvent e) {
-        toggleKey(e.getKeyCode(), true);
+        int code = e.getKeyCode();
+        if (code > 0 && code < keys.length) keys[code] = true;
+
     }
 
     public void keyReleased(KeyEvent e) {
-        toggleKey(e.getKeyCode(), false);
+        int code = e.getKeyCode();
+        if (code > 0 && code < keys.length) keys[code] = false;
     }
 
     public void keyTyped(KeyEvent e) {
-    }
-
-    public void toggleKey(int keyCode, boolean isPressed) {
-        if (keyCode == KeyEvent.VK_W || keyCode == KeyEvent.VK_UP) {
-            up.toggle(isPressed);
-        }
-        if (keyCode == KeyEvent.VK_S || keyCode == KeyEvent.VK_DOWN) {
-            down.toggle(isPressed);
-        }
-        if (keyCode == KeyEvent.VK_A || keyCode == KeyEvent.VK_LEFT) {
-            left.toggle(isPressed);
-        }
-        if (keyCode == KeyEvent.VK_D || keyCode == KeyEvent.VK_RIGHT) {
-            right.toggle(isPressed);
-        }
-        if (keyCode == KeyEvent.VK_SHIFT) {
-            shift.toggle(isPressed);
-        }
-        if (keyCode == KeyEvent.VK_ENTER) {
-            enter.toggle(isPressed);
-        }
-        if (keyCode == KeyEvent.VK_ESCAPE) {
-            esc.toggle(isPressed);
-        }
-        if (keyCode == KeyEvent.VK_SPACE) {
-            space.toggle(isPressed);
-        }
     }
 
     public void mouseClicked(MouseEvent arg0) {
@@ -159,6 +124,7 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
 
     public void mouseReleased(MouseEvent e) {
         toggleMouse(e.getButton(), false);
+        mouse.beingDraged = false;
     }
 
     public void toggleMouse(int mouseButton, boolean isClicked) {
@@ -167,7 +133,9 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
     }
 
     public void mouseDragged(MouseEvent e) {
-
+        mouse.beingDraged = true;
+        mouse.dx = e.getX();
+        mouse.dy = e.getY();
     }
 
     public void mouseMoved(MouseEvent e) {

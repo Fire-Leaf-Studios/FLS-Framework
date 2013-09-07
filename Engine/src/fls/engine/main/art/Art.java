@@ -1,9 +1,14 @@
 package fls.engine.main.art;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Rectangle;
+import java.awt.Robot;
+import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
+import java.io.File;
 
 import javax.imageio.ImageIO;
 
@@ -123,6 +128,30 @@ public class Art {
     public static void setTextCol(Color col) {
         if (col == Color.white) pref = 1;
         if (col == Color.black) pref = -1;
+    }
+
+    /**
+     * Creates a directory called Screenshots within the same folder as the .jar</br> and creates a screenshot whit in when this is called</br> screenshot wil be called 'screenshot.png' if it is the first</br> else it will be call 'screenshot_x.png'
+     * 
+     * @param init
+     */
+    public static void saveScreenShot(Init init) {
+        int atmpt = 1;
+        System.out.println("Screenshot has been saved");
+        Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
+        try {
+            BufferedImage image = new Robot().createScreenCapture(new Rectangle((int) (screen.getWidth() / 2 - init.getWidth() / 2), (int) (screen.getHeight() / 2 - init.getHeight() / 2) - 9, init.getWidth(), init.getHeight()));
+            File dir = new File("Screenshots");
+            if (!dir.exists()) dir.mkdir();
+            File file = new File(dir.getParent() + "/screenshot.png");
+            while (file.exists()) {
+                file = new File(dir.getParent() + "/screenshot_" + atmpt + ".png");
+                atmpt++;
+            }
+            ImageIO.write(image, "png", file);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static void setRootPath(String path) {

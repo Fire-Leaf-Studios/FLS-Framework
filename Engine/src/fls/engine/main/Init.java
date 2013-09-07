@@ -10,7 +10,6 @@ import java.awt.image.BufferedImage;
 import javax.swing.JFrame;
 
 import fls.engine.main.art.Art;
-import fls.engine.main.input.Input;
 
 @SuppressWarnings("serial")
 public class Init extends Canvas implements Runnable {
@@ -18,7 +17,6 @@ public class Init extends Canvas implements Runnable {
     public static int width = 500;
     public static int height;
     public static int scale = 1;
-    public Input input;
     private boolean running = false;
     private BufferedImage image;
     public BufferedImage icon;
@@ -31,7 +29,6 @@ public class Init extends Canvas implements Runnable {
     public int exframes;
     public final String version = "0.3.4";
     private String[] creators;
-    public BufferStrategy bs;
 
     private double desTicks = 60D;
 
@@ -100,7 +97,7 @@ public class Init extends Canvas implements Runnable {
     }
 
     private final void initRender() {
-        bs = getBufferStrategy();
+        BufferStrategy bs = getBufferStrategy();
         if (bs == null) {
             createBufferStrategy(3);
             return;
@@ -134,7 +131,6 @@ public class Init extends Canvas implements Runnable {
     }
 
     public void tick() {
-
     }
 
     public void render(Graphics g) {
