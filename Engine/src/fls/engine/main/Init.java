@@ -161,6 +161,7 @@ public class Init extends Canvas implements Runnable {
     }
 
     private void postClose() {
+        afterClose();
         if (creators.length != 0) {
             System.out.println(title + " made by:");
             if (creators.length > 1) {
@@ -173,6 +174,13 @@ public class Init extends Canvas implements Runnable {
         System.out.println("");
         System.out.println("[2D Engine] created by Elliot Lee-Cerrino");
         System.exit(0);
+    }
+    
+    /**
+     * Call if you want to do somthing will the game is closing
+     */
+    public void afterClose(){
+        
     }
 
     /**

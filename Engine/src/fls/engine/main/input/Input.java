@@ -13,6 +13,14 @@ import fls.engine.main.Init;
 public class Input implements KeyListener, MouseListener, MouseMotionListener {
 
     public static int KEYS = 0, MOUSE = 1, BOTH = 2;
+    private int photoKey = -1;
+    public boolean[] keys = new boolean[65536];
+
+    public List<Mouse> mb = new ArrayList<Mouse>();
+
+    public Mouse leftMouseButton = new Mouse();
+    public Mouse rightMouseButton = new Mouse();
+    public Mouse mouse = new Mouse(); // the ONLY mouse the get X & Y;
 
     public Input(Init game, int type) {
         switch (type) {
@@ -34,8 +42,22 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
         default:
             System.err.println("Not a valid type entered");
             break;
-
         }
+    }
+
+    public void setScreenshotKey(int key) {
+        this.photoKey = key;
+    }
+
+    public int getScreenshtoKey() {
+        return this.photoKey;
+    }
+    
+    public int getPressedKey(){
+        for(int i = 0; i < keys.length; i++){
+            if(keys[i])return i;
+        }
+        return -1;
     }
 
     public class Mouse {
@@ -83,14 +105,6 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
             keys[i] = false;
         }
     }
-
-    public boolean[] keys = new boolean[65536];
-
-    public List<Mouse> mb = new ArrayList<Mouse>();
-
-    public Mouse leftMouseButton = new Mouse();
-    public Mouse rightMouseButton = new Mouse();
-    public Mouse mouse = new Mouse(); // the ONLY mouse the get X & Y;
 
     public void keyPressed(KeyEvent e) {
         int code = e.getKeyCode();

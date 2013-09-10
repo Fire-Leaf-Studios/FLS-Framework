@@ -19,7 +19,6 @@ public class Art {
     private static int pref = -1;
     private static final BufferedImage[][] WText = split(load("/WText.png"), 6, 6);
     private static final BufferedImage[][] BText = split(load("/BText.png"), 6, 6);
-    private static String rootPath;
 
     /**
      * 
@@ -29,7 +28,7 @@ public class Art {
      */
     public static BufferedImage load(String location) {
         try {
-            BufferedImage org = ImageIO.read(Art.class.getResource(rootPath != null ? (rootPath + "/") + location : location));
+            BufferedImage org = ImageIO.read(Art.class.getResource(location));
             BufferedImage res = new BufferedImage(org.getWidth(), org.getHeight(), BufferedImage.TYPE_INT_ARGB);
             Graphics g = res.getGraphics();
             g.drawImage(org, 0, 0, null);
@@ -152,9 +151,5 @@ public class Art {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    public static void setRootPath(String path) {
-        Art.rootPath = path;
     }
 }
