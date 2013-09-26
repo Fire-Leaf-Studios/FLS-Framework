@@ -52,10 +52,10 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
     public int getScreenshtoKey() {
         return this.photoKey;
     }
-    
-    public int getPressedKey(){
-        for(int i = 0; i < keys.length; i++){
-            if(keys[i])return i;
+
+    public int getPressedKey() {
+        for (int i = 0; i < keys.length; i++) {
+            if (keys[i]) return i;
         }
         return -1;
     }

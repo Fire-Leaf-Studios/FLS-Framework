@@ -140,11 +140,11 @@ public class Art {
         Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
         try {
             BufferedImage image = new Robot().createScreenCapture(new Rectangle((int) (screen.getWidth() / 2 - init.getWidth() / 2), (int) (screen.getHeight() / 2 - init.getHeight() / 2) - 9, init.getWidth(), init.getHeight()));
-            File dir = new File("Screenshots");
+            File dir = new File(init.title + " Screenshots");
             if (!dir.exists()) dir.mkdir();
-            File file = new File(dir.getParent() + "/screenshot.png");
+            File file = new File(dir.getPath() + "/" + init.title + " screenshot.png");
             while (file.exists()) {
-                file = new File(dir.getParent() + "/screenshot_" + atmpt + ".png");
+                file = new File(dir.getPath() + "/" + init.title + " screenshot_" + atmpt + ".png");
                 atmpt++;
             }
             ImageIO.write(image, "png", file);

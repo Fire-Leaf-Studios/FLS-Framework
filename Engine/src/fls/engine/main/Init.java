@@ -4,12 +4,14 @@ import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JFrame;
 
 import fls.engine.main.art.Art;
+import fls.engine.main.input.Input;
 
 @SuppressWarnings("serial")
 public class Init extends Canvas implements Runnable {
@@ -18,7 +20,7 @@ public class Init extends Canvas implements Runnable {
     public static int height;
     public static int scale = 1;
     private boolean running = false;
-    private BufferedImage image;
+    public BufferedImage image;
     public BufferedImage icon;
     public Thread thread;
     public String title;
@@ -27,8 +29,10 @@ public class Init extends Canvas implements Runnable {
     private boolean skipInit = false;
     private int ticks = 0;
     public int exframes;
+    public JFrame frame;
     public final String version = "0.3.4";
     private String[] creators;
+    private boolean useAlternateRender = false;
 
     private double desTicks = 60D;
 
@@ -37,7 +41,7 @@ public class Init extends Canvas implements Runnable {
         createWindow("Default window", width);
         setVisible(true);
         showFPS();
-        image = new BufferedImage(width, height, 2);
+        image = createNewImage(width, height, 2);
     }
 
     public void run() {
@@ -72,7 +76,8 @@ public class Init extends Canvas implements Runnable {
             }
             if (shouldRender) {
                 frames++;
-                initRender();
+                if (!useAlternateRender) initRender();
+                else altRender();
             }
             if (System.currentTimeMillis() - lastTimer >= 1000) {
                 lastTimer += 1000;
@@ -91,7 +96,7 @@ public class Init extends Canvas implements Runnable {
         if (!skipInit) {
             if (started) tick();
             if (!started) ticks++;
-        }else{
+        } else {
             tick();
         }
     }
@@ -114,6 +119,10 @@ public class Init extends Canvas implements Runnable {
         bs.show();
     }
 
+    public void altRender() {
+
+    }
+
     private BufferedImage splash;
 
     private void splash(Graphics g) {
@@ -130,7 +139,11 @@ public class Init extends Canvas implements Runnable {
         }
     }
 
+    Input input;
+
     public void tick() {
+        if (input == null) input = new Input(this, Input.KEYS);
+        if (input.keys[KeyEvent.VK_P]) Art.saveScreenShot(this);
     }
 
     public void render(Graphics g) {
@@ -175,12 +188,12 @@ public class Init extends Canvas implements Runnable {
         System.out.println("[2D Engine] created by Elliot Lee-Cerrino");
         System.exit(0);
     }
-    
+
     /**
      * Call if you want to do somthing will the game is closing
      */
-    public void afterClose(){
-        
+    public void afterClose() {
+
     }
 
     /**
@@ -235,6 +248,10 @@ public class Init extends Canvas implements Runnable {
         setPreferredSize(new Dimension(width * scale, height * scale));
     }
 
+    public BufferedImage createNewImage(int width, int height, int hints) {
+        return new BufferedImage(width, height, hints);
+    }
+
     /**
      * 
      * Used to set the title of the frame
@@ -286,6 +303,11 @@ public class Init extends Canvas implements Runnable {
             return false;
         }
         return true;
+    }
+
+    public void useCustomRender() {
+        if (useAlternateRender) return;
+        useAlternateRender = true;
     }
 
     /**
