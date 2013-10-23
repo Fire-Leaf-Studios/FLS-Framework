@@ -150,6 +150,8 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
         mouse.beingDraged = true;
         mouse.dx = e.getX();
         mouse.dy = e.getY();
+        mouse.x = e.getX();
+        mouse.y = e.getY();
     }
 
     public void mouseMoved(MouseEvent e) {
