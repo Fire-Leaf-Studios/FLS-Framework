@@ -11,8 +11,6 @@ import java.awt.image.BufferedImage;
 import javax.swing.JFrame;
 
 import fls.engine.main.art.Art;
-import fls.engine.main.art.SplitImage;
-import fls.engine.main.art.font.Font;
 import fls.engine.main.input.Input;
 
 @SuppressWarnings("serial")
@@ -128,16 +126,12 @@ public class Init extends Canvas implements Runnable {
     private BufferedImage splash;
 
     private void splash(Graphics g) {
-        try {
-            if (splash == null) splash = new SplitImage("/Splash.png").getImage();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        if (splash == null) splash = Art.load("/Splash.png");
         Art.fillScreen(this, g, Color.black);
         g.drawImage(splash, (width * scale / 2) - (splash.getWidth() / 2), (height * scale / 2) - (splash.getHeight() / 2), null);
         String msg = "Version :" + version;
         Art.setTextCol(Color.white);
-        Art.drawString(msg, g, (getWidth() / 2) - (Font.getStringWidth(msg) / 2), splash.getTileGridYOffset() + splash.getHeight() + 75);
+        Art.drawString(msg, g, (getWidth() / 2) - msg.length() * 2, getHeight() - 75);
         if (ticks > 60 * 4) {
             Art.fillScreen(this, g, Color.black);
             started = true;
@@ -156,7 +150,7 @@ public class Init extends Canvas implements Runnable {
         Art.fillScreen(this, g, Color.black);
         String msg = "You haven't used render yet";
         Art.setTextCol(Color.white);
-        Art.drawString(msg, g, (width * scale / 2) - (Font.getStringWidth(msg) / 2), height * scale / 2 + 3);
+        Art.drawString(msg, g, width * scale / 2 - msg.length() * 2 - 20, height * scale / 2 + 3);
     }
 
     public void start() {

@@ -13,13 +13,70 @@ import java.io.File;
 import javax.imageio.ImageIO;
 
 import fls.engine.main.Init;
-import fls.engine.main.art.font.Font;
 
 public class Art {
 
     private static int pref = -1;
-    public static final BufferedImage[][] WText = new SplitImage("/WText.png", 6, 6).split();// split(load("/WText.png"), 6, 6);
-    public static final BufferedImage[][] BText = new SplitImage("/BText.png", 6, 6).split();
+    private static final BufferedImage[][] WText = split(load("/WText.png"), 6, 6);
+    private static final BufferedImage[][] BText = split(load("/BText.png"), 6, 6);
+
+    /**
+     * 
+     * @param location
+     *            - this is the location that the image is loaded from
+     * @return BufferedImage
+     */
+    public static BufferedImage load(String location) {
+        try {
+            BufferedImage org = ImageIO.read(Art.class.getResource(location));
+            BufferedImage res = new BufferedImage(org.getWidth(), org.getHeight(), BufferedImage.TYPE_INT_ARGB);
+            Graphics g = res.getGraphics();
+            g.drawImage(org, 0, 0, null);
+            g.dispose();
+            return res;
+        } catch (Exception e) {
+            throw new RuntimeException(location + " : can't be found");
+        }
+    }
+
+    public static BufferedImage[][] split(BufferedImage src, int xs, int ys) {
+        int xSlide = src.getWidth() / xs;
+        int ySlide = src.getHeight() / ys;
+        BufferedImage[][] res = new BufferedImage[xSlide][ySlide];
+        for (int x = 0; x < xSlide; x++) {
+            for (int y = 0; y < ySlide; y++) {
+                res[x][y] = new BufferedImage(xs, ys, BufferedImage.TYPE_INT_ARGB);
+                Graphics g = res[x][y].getGraphics();
+                g.drawImage(src, -xs * x, -ys * y, null);
+                g.dispose();
+            }
+        }
+        return res;
+    }
+
+    public static BufferedImage[][] altsplit(BufferedImage src, int xs, int ys) {
+        int xSlide = src.getHeight() / xs;
+        int ySlide = src.getWidth() / ys;
+        BufferedImage[][] res = new BufferedImage[xSlide][ySlide];
+        for (int x = 0; x < xSlide; x++) {
+            for (int y = 0; y < ySlide; y++) {
+                res[x][y] = new BufferedImage(xs, ys, BufferedImage.TYPE_INT_ARGB);
+                Graphics g = res[x][y].getGraphics();
+                g.drawImage(src, xs, 0, 0, ys, x * xs, y * ys, (x + 1) * xs, (y + 1) * ys, null);
+
+            }
+        }
+        return res;
+    }
+
+    public static BufferedImage scale(BufferedImage src, int scale) {
+        int w = src.getWidth() * scale;
+        int h = src.getHeight() * scale;
+        BufferedImage res = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        Graphics g = res.getGraphics();
+        g.drawImage(src.getScaledInstance(w, h, BufferedImage.SCALE_AREA_AVERAGING), 0, 0, null);
+        return res;
+    }
 
     public static void renderMultiple(BufferedImage image, Graphics g, int amount, int x, int y, int spaceBetween, boolean hoz) {
         for (int i = 0; i < amount; i++) {
@@ -33,11 +90,20 @@ public class Art {
     }
 
     private static String[] chars = {
-            "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "!?[]()\"'£<>:;+-=0123456789", "/\\.,|"
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "!?[]()\"'£<>:;+-=0123456789", "/\\.,"
     };
 
     public static void drawString(String string, Graphics g, int x, int y) {
-        Font.draw(string, g, x, y);
+        string = string.toUpperCase();
+        for (int i = 0; i < string.length(); i++) {
+            char ch = string.charAt(i);
+            for (int ys = 0; ys < chars.length; ys++) {
+                int xs = chars[ys].indexOf(ch);
+                if (xs >= 0) {
+                    g.drawImage(pref == 1 ? WText[xs][ys] : BText[xs][ys], x + i * 6, y, null);
+                }
+            }
+        }
     }
 
     public static void drawScaledText(String msg, Graphics g, int x, int y, int scale) {
