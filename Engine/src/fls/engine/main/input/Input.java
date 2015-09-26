@@ -56,6 +56,9 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
         case 2:
             System.out.println("Added Controller input");
             conts = ControllerEnvironment.getDefaultEnvironment().getControllers();
+            for(Controller c : conts){
+            	System.out.println(c.getName());
+            }
             break;
         default:
             System.err.println("Not a valid type entered");
@@ -68,6 +71,7 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
      */
     public void setPrimaryContoller(){
     	for(Controller c : conts){
+    		c.poll();
     		Component[] comps = c.getComponents();
     		for(Component comp : comps){
     			if(comp.getIdentifier().getName() == "Start" && c.getType() == Controller.Type.GAMEPAD){

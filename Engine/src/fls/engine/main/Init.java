@@ -259,6 +259,10 @@ public class Init extends Canvas implements Runnable {
         return new BufferedImage(width, height, hints);
     }
     
+    public void setInput(Input i){
+    	this.input = i;
+    }
+    
     public void setScreen(Screen s){
     	if(s == null)return;
     	s.init(this, this.input);
