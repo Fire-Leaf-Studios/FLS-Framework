@@ -40,7 +40,7 @@ public class Init extends Canvas implements Runnable {
     private Input input;
 
     public Init(String name,int width,int height) {
-    	 createWindow("Default window", width,height);
+    	 createWindow(name, width,height);
          setVisible(true);
          image = createNewImage(width, height, 2);
     	 this.frame = new JFrame(title);
