@@ -4,14 +4,16 @@ import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.event.KeyEvent;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JFrame;
 
 import fls.engine.main.art.Art;
+import fls.engine.main.art.SplitImage;
 import fls.engine.main.input.Input;
+import fls.engine.main.screen.NonRenderScreen;
+import fls.engine.main.screen.Screen;
 
 @SuppressWarnings("serial")
 public class Init extends Canvas implements Runnable {
@@ -30,18 +32,38 @@ public class Init extends Canvas implements Runnable {
     private int ticks = 0;
     public int exframes;
     public JFrame frame;
-    public final String version = "0.3.4";
+    public final String version = "0.3.6";
     private String[] creators;
-    private boolean useAlternateRender = false;
 
     private double desTicks = 60D;
+    private Screen screen;
+    private Input input;
 
-    public Init() {
-        setScale(1);
-        createWindow("Default window", width);
-        setVisible(true);
-        showFPS();
-        image = createNewImage(width, height, 2);
+    public Init(String name,int width,int height) {
+    	 createWindow("Default window", width,height);
+         setVisible(true);
+         image = createNewImage(width, height, 2);
+    	 this.frame = new JFrame(title);
+         // frame.setPreferredSize(new Dimension(Init.width * Init.scale, Init.height * Init.scale));
+         frame.setResizable(false);
+         frame.add(this);
+         frame.pack();
+         frame.setVisible(true);
+         frame.setDefaultCloseOperation(3);
+         frame.setLocationRelativeTo(null);
+         if (this.icon != null) {
+             frame.setIconImage(this.icon);
+         }
+         setScreen(new NonRenderScreen());
+         this.start();
+    }
+    
+    public Init(){
+    	this("Default Window",600,400);
+    }
+    
+    public Init(String name,int width){
+    	this(name,width,width/16 * 9);
     }
 
     public void run() {
@@ -76,8 +98,7 @@ public class Init extends Canvas implements Runnable {
             }
             if (shouldRender) {
                 frames++;
-                if (!useAlternateRender) initRender();
-                else altRender();
+                initRender();
             }
             if (System.currentTimeMillis() - lastTimer >= 1000) {
                 lastTimer += 1000;
@@ -94,10 +115,10 @@ public class Init extends Canvas implements Runnable {
 
     private final void initTick() {
         if (!skipInit) {
-            if (started) tick();
+            if (started) screen.update();
             if (!started) ticks++;
         } else {
-            tick();
+            screen.update();
         }
     }
 
@@ -109,10 +130,10 @@ public class Init extends Canvas implements Runnable {
         }
         Graphics g = bs.getDrawGraphics();
         if (!skipInit) {
-            if (started) render(g);
+            if (started) this.screen.render(g);
             else splash(g);
         } else {
-            render(g);
+            this.screen.render(g);
         }
         g.drawImage(image, 0, 0, width * scale, height * scale, null);
         g.dispose();
@@ -126,7 +147,7 @@ public class Init extends Canvas implements Runnable {
     private BufferedImage splash;
 
     private void splash(Graphics g) {
-        if (splash == null) splash = Art.load("/Splash.png");
+        if (splash == null) splash = new SplitImage("/Splash.png").load();
         Art.fillScreen(this, g, Color.black);
         g.drawImage(splash, (width * scale / 2) - (splash.getWidth() / 2), (height * scale / 2) - (splash.getHeight() / 2), null);
         String msg = "Version :" + version;
@@ -137,20 +158,6 @@ public class Init extends Canvas implements Runnable {
             started = true;
             ticks = 0;
         }
-    }
-
-    Input input;
-
-    public void tick() {
-        if (input == null) input = new Input(this, Input.KEYS);
-        if (input.keys[KeyEvent.VK_P]) Art.saveScreenShot(this);
-    }
-
-    public void render(Graphics g) {
-        Art.fillScreen(this, g, Color.black);
-        String msg = "You haven't used render yet";
-        Art.setTextCol(Color.white);
-        Art.drawString(msg, g, width * scale / 2 - msg.length() * 2 - 20, height * scale / 2 + 3);
     }
 
     public void start() {
@@ -251,6 +258,12 @@ public class Init extends Canvas implements Runnable {
     public BufferedImage createNewImage(int width, int height, int hints) {
         return new BufferedImage(width, height, hints);
     }
+    
+    public void setScreen(Screen s){
+    	if(s == null)return;
+    	s.init(this, this.input);
+    	this.screen = s;
+    }
 
     /**
      * 
@@ -305,11 +318,6 @@ public class Init extends Canvas implements Runnable {
         return true;
     }
 
-    public void useCustomRender() {
-        if (useAlternateRender) return;
-        useAlternateRender = true;
-    }
-
     /**
      * replace image with a custom sied and type BufferedImage
      * 
@@ -339,18 +347,6 @@ public class Init extends Canvas implements Runnable {
     }
 
     public static void main(String[] args) {
-        Init game = new Init();
-        JFrame frame = new JFrame(game.title);
-        // frame.setPreferredSize(new Dimension(Init.width * Init.scale, Init.height * Init.scale));
-        frame.setResizable(false);
-        frame.add(game);
-        frame.pack();
-        frame.setVisible(true);
-        frame.setDefaultCloseOperation(3);
-        frame.setLocationRelativeTo(null);
-        if (game.icon != null) {
-            frame.setIconImage(game.icon);
-        }
-        game.start();
+        new Init();
     }
 }
