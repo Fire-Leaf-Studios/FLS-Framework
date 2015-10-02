@@ -16,8 +16,8 @@ public class NonRenderScreen extends Screen{
 	@Override
 	public void render(Graphics g) {
 		Art.fillScreen(this.game, g, Color.black);
-        String msg = "You haven't used render yet";
+        String msg = "You need to set a screen before this will work";
         Art.setTextCol(Color.white);
-        Art.drawString(msg, g, this.game.width * this.game.scale / 2 - msg.length() * 2 - 20, this.game.height * this.game.scale / 2 + 3);
+        Art.drawString(msg, g, (this.game.width / 2) - (msg.length() * Art.FONTSIZE) / 2, this.game.height * this.game.scale / 2 + 3);
 	}
 }

@@ -19,6 +19,10 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
     private boolean[] keys;
     private boolean[] preKeys;
     
+    private boolean addedMouse = false;
+    private boolean addedKeyboard = false;
+    private boolean addedControllers = false;
+    
     private HashMap<String,int[]> preDefs;
     private Controller[] conts;
     private CustomController primaryController;
@@ -47,15 +51,21 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
             this.preDefs.put("down", new int[]{KeyEvent.VK_S,KeyEvent.VK_DOWN});
             this.preDefs.put("left", new int[]{KeyEvent.VK_A,KeyEvent.VK_LEFT});
             this.preDefs.put("right", new int[]{KeyEvent.VK_D,KeyEvent.VK_RIGHT});
+            this.addedKeyboard = true;
             break;
         case 1:
+        	this.addedMouse = true;
             System.out.println("Added Mouse input");
             game.addMouseListener(this);
             game.addMouseMotionListener(this);
             break;
         case 2:
+        	this.addedControllers = true;
             System.out.println("Added Controller input");
             conts = ControllerEnvironment.getDefaultEnvironment().getControllers();
+            for(Controller c : conts){
+            	System.out.println(c.getName());
+            }
             break;
         default:
             System.err.println("Not a valid type entered");
@@ -67,7 +77,9 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
      * A function called to set the primary controller, useful for things like start screens
      */
     public void setPrimaryContoller(){
+    	if(!this.addedControllers)return;
     	for(Controller c : conts){
+    		c.poll();
     		Component[] comps = c.getComponents();
     		for(Component comp : comps){
     			if(comp.getIdentifier().getName() == "Start" && c.getType() == Controller.Type.GAMEPAD){
@@ -82,6 +94,14 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
     
     public CustomController getController(){
     	return this.primaryController;
+    }
+    
+    public void tick(){
+    	if(!this.addedKeyboard)return;
+    	for(int i = 0; i < this.keys.length; i++){
+    		this.preKeys[i] = this.keys[i];
+    	}
+    	this.releaseAllKeys();
     }
 
     /**
@@ -106,7 +126,13 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
      * @return true or false
      */
     public boolean isKeyPressed(int i){
+    	if(!this.addedKeyboard)return false;
     	return this.keys[i];
+    }
+    
+    public boolean isPreKeyPressed(int i){
+    	if(!this.addedKeyboard)return false;
+    	return this.preKeys[i];
     }
     
     /**
@@ -117,8 +143,6 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
     public void addPreDefKeys(String key,int... keys){
     	this.preDefs.put(key, keys);
     }
-    
-    /*TODO come up with better name for getDefKeyRes*/
     
     /**
      * The function that returns if anyone of a group of set keys is pressed
@@ -218,16 +242,11 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
         for (int i = 0; i < keys.length; i++) {
             keys[i] = false;
         }
-        
-        for(int j = 0; j < preKeys.length; j++){
-        	preKeys[j] = false;
-        }
     }
 
     public void keyPressed(KeyEvent e) {
         int code = e.getKeyCode();
         if (code > 0 && code < keys.length){
-        	preKeys[code] = keys[code];
         	keys[code] = true;
         }
 
@@ -236,9 +255,27 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
     public void keyReleased(KeyEvent e) {
         int code = e.getKeyCode();
         if (code > 0 && code < keys.length){
-        	preKeys[code] = keys[code];
         	keys[code] = false;
         }
+    }
+    
+    public boolean isTyped(int key){
+    	if(isKeyPressed(key) && !isPreKeyPressed(key)){
+    		return true;
+    	}else return false;
+    }
+    
+    public String getKeyTyped(String msg){
+    	if(!this.addedKeyboard)return msg;
+    	for(int i = 0; i < this.keys.length; i++){
+    		if(keys[i] == true){
+    			if(i == KeyEvent.VK_SPACE)return msg + " ";
+    			else if(i == KeyEvent.VK_BACK_SPACE)return msg.length()!=0?msg.substring(0,msg.length()-1):msg;
+    			else if(i == KeyEvent.VK_ENTER)return msg + "\n";
+    			else return isTyped(i)?msg+KeyEvent.getKeyText(i):msg; 
+    		}
+    	}
+    	return msg;
     }
 
     public void keyTyped(KeyEvent e) {
@@ -266,6 +303,7 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
     }
 
     public void toggleMouse(int mouseButton, boolean isClicked) {
+    	if(!this.addedMouse)return;
         if (mouseButton == MouseEvent.BUTTON1) leftMouseButton.toggle(isClicked);
         if (mouseButton == MouseEvent.BUTTON3) rightMouseButton.toggle(isClicked);
     }

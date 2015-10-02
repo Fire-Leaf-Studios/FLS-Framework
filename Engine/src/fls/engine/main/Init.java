@@ -40,7 +40,7 @@ public class Init extends Canvas implements Runnable {
     private Input input;
 
     public Init(String name,int width,int height) {
-    	 createWindow("Default window", width,height);
+    	 createWindow(name, width,height);
          setVisible(true);
          image = createNewImage(width, height, 2);
     	 this.frame = new JFrame(title);
@@ -115,10 +115,14 @@ public class Init extends Canvas implements Runnable {
 
     private final void initTick() {
         if (!skipInit) {
-            if (started) screen.update();
+            if (started) {
+            	screen.update();
+            	screen.inputTick();
+            }
             if (!started) ticks++;
         } else {
             screen.update();
+            screen.inputTick();
         }
     }
 
@@ -259,9 +263,15 @@ public class Init extends Canvas implements Runnable {
         return new BufferedImage(width, height, hints);
     }
     
+    public void setInput(Input i){
+    	this.input = i;
+    }
+    
     public void setScreen(Screen s){
     	if(s == null)return;
     	s.init(this, this.input);
+    	System.out.println("Loaded a new screen: "+ s.getClass().getSimpleName());
+    	s.postInit();
     	this.screen = s;
     }
 
