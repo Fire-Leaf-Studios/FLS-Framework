@@ -21,6 +21,8 @@ public class Font {
     public static void draw(String msg, Graphics g, int x, int y) {
         msg = msg.toUpperCase();
         int length = msg.length();
+        int yo = 0;
+        int xo = 0;
         for (int i = 0; i < length; i++) {
             int c = letters.indexOf(msg.charAt(i));
             if (c > 56) continue;

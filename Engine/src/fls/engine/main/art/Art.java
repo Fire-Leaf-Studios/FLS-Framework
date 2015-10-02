@@ -20,6 +20,7 @@ public class Art {
     private static int pref = -1;
     public static final BufferedImage[][] WText = new SplitImage("/WText.png", 6, 6).split();// split(load("/WText.png"), 6, 6);
     public static final BufferedImage[][] BText = new SplitImage("/BText.png", 6, 6).split();
+    public static final int FONTSIZE = 6;
 
     public static void renderMultiple(BufferedImage image, Graphics g, int amount, int x, int y, int spaceBetween, boolean hoz) {
         for (int i = 0; i < amount; i++) {
@@ -37,7 +38,12 @@ public class Art {
     };
 
     public static void drawString(String string, Graphics g, int x, int y) {
-        Font.draw(string, g, x, y);
+    	String[] part = string.split("\n");
+    	int i = 0;
+    	for(String s : part){
+    		Font.draw(s, g, x, y + FONTSIZE * 2 * i);
+    		i++;
+    	}
     }
 
     public static void drawScaledText(String msg, Graphics g, int x, int y, int scale) {

@@ -115,10 +115,14 @@ public class Init extends Canvas implements Runnable {
 
     private final void initTick() {
         if (!skipInit) {
-            if (started) screen.update();
+            if (started) {
+            	screen.update();
+            	screen.inputTick();
+            }
             if (!started) ticks++;
         } else {
             screen.update();
+            screen.inputTick();
         }
     }
 
@@ -266,6 +270,8 @@ public class Init extends Canvas implements Runnable {
     public void setScreen(Screen s){
     	if(s == null)return;
     	s.init(this, this.input);
+    	System.out.println("Loaded a new screen: "+ s.getClass().getSimpleName());
+    	s.postInit();
     	this.screen = s;
     }
 
