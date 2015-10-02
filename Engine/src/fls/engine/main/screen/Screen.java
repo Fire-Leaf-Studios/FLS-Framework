@@ -13,6 +13,11 @@ public abstract class Screen{
 	public Input input;
 	public GUIManager manager;
 	
+	/** Called when the screen is about to be set in the  class
+	 * 
+	 * @param game
+	 * @param in
+	 */
 	public final void init(Init game,Input in){
 		this.manager = new GUIManager();
 		this.game = game;
