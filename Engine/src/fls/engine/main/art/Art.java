@@ -1,20 +1,16 @@
 package fls.engine.main.art;
 
-import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
-import java.awt.Rectangle;
 import java.awt.Robot;
-import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Random;
-import java.util.jar.JarFile;
 
 import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 
 import fls.engine.main.Init;
 import fls.engine.main.art.font.Font;
@@ -70,8 +66,8 @@ public class Art {
         }
     }
 
-    public static void fillScreen(Init i, Graphics g, Color c) {
-        g.setColor(c);
+    public static void fillScreen(Init i, Graphics g, ABSColor c) {
+        g.setColor(c.getRegColor());
         g.fillRect(0, 0, i.getWidth(), i.getHeight());
     }
     
@@ -107,20 +103,24 @@ public class Art {
      */
     public static void saveScreenShot(Init init) {
         int atmpt = 1;
-        System.out.println("Screenshot has been saved");
-        Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
         try {
-            BufferedImage image = new Robot().createScreenCapture(new Rectangle((int) (screen.getWidth() / 2 - init.getWidth() / 2), (int) (screen.getHeight() / 2 - init.getHeight() / 2) - 9, init.getWidth(), init.getHeight()));
+            BufferedImage image = new Robot().createScreenCapture(init.frame.getBounds());
             File dir = new File(init.title + " Screenshots");
             if (!dir.exists()) dir.mkdir();
             File file = new File(dir.getPath() + "/" + init.title + " screenshot.png");
             while (file.exists()) {
-                file = new File(dir.getPath() + "/" + init.title + " screenshot_" + atmpt + ".png");
+                file = new File(dir.getPath() + "/" + init.title + " screenshot-" + atmpt + ".png");
                 atmpt++;
             }
             ImageIO.write(image, "png", file);
         } catch (Exception e) {
             e.printStackTrace();
+            System.out.println("Somthing has gone wrong while, takeing a screen shot");
         }
+        System.out.println("Screenshot has been saved");
+    }
+    
+    private static void showImage(BufferedImage i){
+    	JOptionPane.showMessageDialog(null, null,"Image",JOptionPane.OK_OPTION,new ImageIcon(i));
     }
 }

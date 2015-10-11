@@ -1,5 +1,7 @@
 package fls.engine.main.art;
 
+import java.awt.Color;
+
 public class ABSColor {
 
 	public final int r,g,b;
@@ -41,5 +43,9 @@ public class ABSColor {
 	
 	public int getB(){
 		return this.b;
+	}
+	
+	public Color getRegColor(){
+		return new Color(this.r,this.g,this.b);
 	}
 }
