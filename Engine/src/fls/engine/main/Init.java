@@ -9,6 +9,9 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.JFrame;
 
+import android.graphics.Bitmap;
+
+import fls.engine.main.android.AndroidHandler;
 import fls.engine.main.art.Art;
 import fls.engine.main.art.SplitImage;
 import fls.engine.main.input.Input;
@@ -22,7 +25,7 @@ public class Init extends Canvas implements Runnable {
     public static int height;
     public static int scale = 1;
     private boolean running = false;
-    public BufferedImage image;
+    protected BufferedImage image;
     public BufferedImage icon;
     public Thread thread;
     public String title;
@@ -34,6 +37,9 @@ public class Init extends Canvas implements Runnable {
     public JFrame frame;
     public final String version = "0.3.6";
     private String[] creators;
+    
+    public AndroidHandler androidHand;
+    private boolean isAndroid;
 
     private double desTicks = 60D;
     private Screen screen;
@@ -142,6 +148,19 @@ public class Init extends Canvas implements Runnable {
         g.drawImage(image, 0, 0, width * scale, height * scale, null);
         g.dispose();
         bs.show();
+        if(!isDesktop()){
+        	setSurfaceBitmap();
+        }
+    }
+    
+    private void setSurfaceBitmap(){
+    	int[] pixels = new int[WIDTH * HEIGHT];
+    	this.image.getRGB(0, 0, width, height, pixels, 0, width);
+    	this.androidHand.getSurface().b = Bitmap.createBitmap(pixels, width, height, Bitmap.Config.RGB_565);
+    	
+    	this.androidHand.getSurface().onDraw(this.androidHand.getCanavs());
+    	this.androidHand.getSurfaceHolder().unlockCanvasAndPost(this.androidHand.getCanavs());
+    	this.androidHand.setCanvas(this.androidHand.getSurfaceHolder().lockCanvas());
     }
 
     public void altRender() {
@@ -155,7 +174,7 @@ public class Init extends Canvas implements Runnable {
         Art.fillScreen(this, g, Color.black);
         g.drawImage(splash, (width * scale / 2) - (splash.getWidth() / 2), (height * scale / 2) - (splash.getHeight() / 2), null);
         String msg = "Version :" + version;
-        Art.setTextCol(Color.white);
+        Art.randomColorFont("Splash-random", 100);
         Art.drawString(msg, g, (getWidth() / 2) - msg.length() * 2, getHeight() - 75);
         if (ticks > 60 * 4) {
             Art.fillScreen(this, g, Color.black);
@@ -354,6 +373,23 @@ public class Init extends Canvas implements Runnable {
 
     public void skipInit() {
         skipInit = true;
+    }
+    
+    /**
+     * Used to identify and set up basic android functions
+     * @param ah
+     */
+    public void setupAndroidHandler(AndroidHandler ah){
+    	this.isAndroid = true;
+    	this.androidHand = ah;
+    }
+    
+    /**
+     * Gives a way of letting you know if your on android or not
+     * @return
+     */
+    public boolean isDesktop(){
+    	return !this.isAndroid;
     }
 
     public static void main(String[] args) {

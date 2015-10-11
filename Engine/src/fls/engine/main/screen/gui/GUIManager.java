@@ -41,6 +41,13 @@ public class GUIManager implements GUIListener{
 		}
 		return null;
 	}
+	
+	public GUIElement getElementByID(int id){
+		for(GUIElement e : elements){
+			if(e.id == id)return e;
+		}
+		return null;
+	}
 
 	@Override
 	public void fireEvent(GUIEvent e) {

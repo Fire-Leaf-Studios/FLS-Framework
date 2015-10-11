@@ -12,15 +12,14 @@ public class SplitImage {
     private BufferedImage pre_image;
     private BufferedImage[][] images;
 
-    public SplitImage(String loc, int xs, int ys) {
+    public SplitImage(String loc) {
         this.loc = loc;
-        this.xs = xs;
-        this.ys = ys;
         pre_image=load();
     }
-
-    public SplitImage(String loc) {
-        this(loc, -1, -1);
+    
+    public SplitImage(BufferedImage i){
+    	this.loc = "Pre-loaded";
+    	this.pre_image = i;
     }
 
     public BufferedImage getImage() {
@@ -34,8 +33,6 @@ public class SplitImage {
 
     /**
      * 
-     * @param location
-     *            - this is the location that the image is loaded from
      * @return BufferedImage
      */
     public BufferedImage load() {
@@ -51,8 +48,8 @@ public class SplitImage {
         }
     }
 
-    public BufferedImage[][] split() {
-        BufferedImage src = load();
+    public BufferedImage[][] split(int xs,int ys) {
+        BufferedImage src = this.pre_image;
         int xSlide = src.getWidth() / xs;
         int ySlide = src.getHeight() / ys;
         BufferedImage[][] res = new BufferedImage[xSlide][ySlide];
@@ -67,8 +64,8 @@ public class SplitImage {
         return res;
     }
 
-    public BufferedImage[][] altsplit() {
-        BufferedImage src = load();
+    public BufferedImage[][] altsplit(int xs,int ys) {
+        BufferedImage src = this.pre_image;
         int xSlide = src.getHeight() / xs;
         int ySlide = src.getWidth() / ys;
         BufferedImage[][] res = new BufferedImage[xSlide][ySlide];
@@ -91,13 +88,20 @@ public class SplitImage {
         g.drawImage(src.getScaledInstance(w, h, BufferedImage.SCALE_AREA_AVERAGING), 0, 0, null);
         return res;
     }
-
-    public int getXSplit() {
-        return xs;
-    }
-
-    public int getYSplit() {
-        return ys;
+    
+    public SplitImage changeImageColor(ABSColor oc,ABSColor nc){
+    	int[] pixels = new int[this.pre_image.getWidth() * this.pre_image.getHeight()];
+    	int w = this.pre_image.getWidth();
+    	int h = this.pre_image .getHeight();
+    	BufferedImage res = new BufferedImage(w,h,BufferedImage.TYPE_INT_ARGB);
+    	this.pre_image.getRGB(0, 0, w, h, pixels, 0, w);
+    	for(int x = 0; x < w; x++){
+    		for(int y = 0; y < h; y++){
+    			if(pixels[x + y * w] == oc.getRGB())res.setRGB(x, y, nc.getRGB());
+    		}
+    	}
+    	//JOptionPane.showMessageDialog(null,null,"New Image",JOptionPane.OK_CANCEL_OPTION,new ImageIcon(res));
+    	return new SplitImage(res);
     }
 
 }

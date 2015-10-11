@@ -49,5 +49,9 @@ public class TextBox extends GUIElement {
 			ticks++;
 		}
 	}
+	
+	public String toString(){
+		return this.text;
+	}
 
 }
