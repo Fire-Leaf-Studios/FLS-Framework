@@ -272,6 +272,12 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
     			if(i == KeyEvent.VK_SPACE)return msg + " ";
     			else if(i == KeyEvent.VK_BACK_SPACE)return msg.length()!=0?msg.substring(0,msg.length()-1):msg;
     			else if(i == KeyEvent.VK_ENTER)return msg + "\n";
+    			else if(i == KeyEvent.VK_SLASH)return msg + "/";
+    			else if(i == KeyEvent.VK_BACK_SLASH)return msg+"\\";
+    			else if(i == KeyEvent.VK_MINUS)return msg + "-";
+    			else if(i == KeyEvent.VK_EQUALS)return msg +"=";
+    			else if(i == KeyEvent.VK_PERIOD)return msg + ".";
+    			else if(i == KeyEvent.VK_COMMA)return msg + ",";
     			else return isTyped(i)?msg+KeyEvent.getKeyText(i):msg; 
     		}
     	}

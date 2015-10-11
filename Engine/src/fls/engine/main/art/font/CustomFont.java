@@ -11,7 +11,7 @@ public class CustomFont extends Font {
     private static int xlength, xSplit;
 
     public CustomFont(String fontLoc, int xs, int ys, int xL) {
-        CustomFont.font = new SplitImage(fontLoc, xs, ys).split();
+        CustomFont.font = new SplitImage(fontLoc).split(xs,ys);
         CustomFont.xlength = xL;
         CustomFont.xSplit = xs;
     }
