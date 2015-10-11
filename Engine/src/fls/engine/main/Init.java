@@ -1,7 +1,6 @@
 package fls.engine.main;
 
 import java.awt.Canvas;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
@@ -10,8 +9,8 @@ import java.awt.image.BufferedImage;
 import javax.swing.JFrame;
 
 import android.graphics.Bitmap;
-
 import fls.engine.main.android.AndroidHandler;
+import fls.engine.main.art.ABSColor;
 import fls.engine.main.art.Art;
 import fls.engine.main.art.SplitImage;
 import fls.engine.main.input.Input;
@@ -25,7 +24,7 @@ public class Init extends Canvas implements Runnable {
     public static int height;
     public static int scale = 1;
     private boolean running = false;
-    protected BufferedImage image;
+    public BufferedImage image;
     public BufferedImage icon;
     public Thread thread;
     public String title;
@@ -50,7 +49,6 @@ public class Init extends Canvas implements Runnable {
          setVisible(true);
          image = createNewImage(width, height, 2);
     	 this.frame = new JFrame(title);
-         // frame.setPreferredSize(new Dimension(Init.width * Init.scale, Init.height * Init.scale));
          frame.setResizable(false);
          frame.add(this);
          frame.pack();
@@ -61,7 +59,6 @@ public class Init extends Canvas implements Runnable {
              frame.setIconImage(this.icon);
          }
          setScreen(new NonRenderScreen());
-         this.start();
     }
     
     public Init(){
@@ -171,13 +168,13 @@ public class Init extends Canvas implements Runnable {
 
     private void splash(Graphics g) {
         if (splash == null) splash = new SplitImage("/Splash.png").load();
-        Art.fillScreen(this, g, Color.black);
+        Art.fillScreen(this, g, ABSColor.black);
         g.drawImage(splash, (width * scale / 2) - (splash.getWidth() / 2), (height * scale / 2) - (splash.getHeight() / 2), null);
         String msg = "Version :" + version;
         Art.randomColorFont("Splash-random", 100);
         Art.drawString(msg, g, (getWidth() / 2) - msg.length() * 2, getHeight() - 75);
         if (ticks > 60 * 4) {
-            Art.fillScreen(this, g, Color.black);
+            Art.fillScreen(this, g, ABSColor.black);
             started = true;
             ticks = 0;
         }
