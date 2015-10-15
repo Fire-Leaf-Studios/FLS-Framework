@@ -1,77 +1,53 @@
 package fls.engine.main.sound;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.IOException;
+import java.io.File;
 
+import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
 
-/**
- * A very simple sound loader
- * 
- * @author kpars's of JGO
- * 
- * @version 1.0
- * 
- */
-public class Sound {
-    public static class Clips {
-        public Clip[] clips;
-        private int p;
-        private int count;
+public class Sound extends Thread{
 
-        public Clips(byte[] buffer, int count) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
-            if (buffer == null) return;
-
-            clips = new Clip[count];
-            this.count = count;
-            for (int i = 0; i < count; i++) {
-                clips[i] = AudioSystem.getClip();
-                clips[i].open(AudioSystem.getAudioInputStream(new ByteArrayInputStream(buffer)));
-            }
-        }
-
-        public void play() {
-            if (clips == null) return;
-
-            clips[p].stop();
-            clips[p].setFramePosition(0);
-            clips[p].start();
-            p++;
-            if (p >= count) p = 0;
-        }
-
-        public void end() {
-            if (clips == null) return;
-            clips[p].close();
-            p++;
-            if (p >= count) p = 0;
-        }
-    }
-
-    protected static Clips load(String name, int count) {
-        try {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            DataInputStream dis = new DataInputStream(Sound.class.getResourceAsStream(name));
-            byte[] buffer = new byte[1024];
-            int read = 0;
-            while ((read = dis.read(buffer)) >= 0) {
-                baos.write(buffer, 0, read);
-            }
-            dis.close();
-
-            byte[] data = baos.toByteArray();
-            return new Clips(data, count);
-        } catch (Exception e) {
-            try {
-                return new Clips(null, 0);
-            } catch (Exception ee) {
-                return null;
-            }
-        }
-    }
+	
+	private String path;
+	private Clip clip;
+	public AudioInputStream ais;
+	private boolean looping = true;
+	
+	public Sound(String p){
+		this.path = p;
+		try{
+			this.ais = AudioSystem.getAudioInputStream(new File(this.path).getAbsoluteFile());
+			this.clip = AudioSystem.getClip();
+		}catch(Exception e){
+			e.printStackTrace();
+			System.err.println("The sound file couldn't be loaded");
+		}
+	}
+	
+	public void playSound(){
+		this.start();
+		this.clip.start();
+	}
+	
+	public void stopSound(){
+		this.looping = false;
+		this.clip.stop();
+		try {
+			this.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void loopSound(){
+		this.looping = true;
+		while(this.looping){
+			if(!this.clip.isRunning())playSound();
+		}
+	}
+	
+	public void noLoop(){
+		this.looping = false;
+	}
 }

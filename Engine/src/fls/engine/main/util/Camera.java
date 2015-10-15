@@ -5,8 +5,8 @@ public class Camera {
 	public int w, h;
 	public Point pos;
 
-	public Camera(int x, int y, int w, int h) {
-		this.pos = new Point(x,y);
+	public Camera(int w, int h) {
+		this.pos = new Point(0,0);
 		this.w = w;
 		this.h = h; 
 	}
