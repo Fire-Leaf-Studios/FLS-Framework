@@ -21,9 +21,10 @@ public class DataFile extends FileIO {
 			cChunk = cChunk.trim();
 			int colon = cChunk.indexOf(":");
 			if(colon == -1)return;
-			String key = cChunk.substring(0, colon);
-			String value = cChunk.substring(colon + 1, cChunk.length());
-			this.ats.put(key, new AtributeValue(value));
+			String key = cChunk.substring(0, colon).trim();
+			String value = cChunk.substring(colon + 1, cChunk.length()).trim();
+			AtributeValue val = new AtributeValue(value);
+			this.ats.put(key, val);
 		}
 	}
 	
@@ -50,5 +51,21 @@ public class DataFile extends FileIO {
 		if(this.ats.get(key) == null)this.ats.put(key, new AtributeValue(val));
 		else this.ats.get(key).setValue(val);
 		writeFile();
+	}
+	
+	public void increaseValue(String key,int amt){
+		if(this.ats.get(key) != null){
+			int prev = this.ats.get(key).getInt();
+			prev += amt;
+			setValue(key,""+prev);
+		}
+	}
+	
+	public void decreaseValue(String key,int amt){
+		this.increaseValue(key, -amt);
+	}
+	
+	public AtributeValue getData(String key){
+		return this.ats.get(key);
 	}
 }

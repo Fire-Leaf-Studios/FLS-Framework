@@ -65,4 +65,56 @@ public class HTTP {
 		}
 		return response.toString();
 	}
+	
+	public static String post(String path){
+		String url = path;
+		URL ur = null;
+		
+		try {
+			ur = new URL(url);
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+		
+		HttpURLConnection con = null;
+		
+		try {
+			con = (HttpURLConnection)ur.openConnection();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		try {
+			con.setRequestMethod("POST");
+		} catch (ProtocolException e) {
+			e.printStackTrace();
+		}
+		
+		BufferedReader br = null;
+		
+		try {
+			br = new BufferedReader(new InputStreamReader(con.getInputStream()));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		String res = "";
+		String cLine = "";
+		
+		try {
+			while((cLine = br.readLine()) != null){
+				res += cLine + "\n";
+			}
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		
+		try {
+			br.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return res;
+	}
 }

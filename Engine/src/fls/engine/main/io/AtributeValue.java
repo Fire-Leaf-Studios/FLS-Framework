@@ -25,4 +25,16 @@ public class AtributeValue {
 	public void setValue(String val){
 		this.val = val;
 	}
+	
+	public String[] getValues(){
+		int s = this.val.indexOf("[");
+		int e = this.val.indexOf("]");
+		String[] items = this.val.substring(s + 1, e).split(",");
+		int len = items.length;
+		String[] res = new String[len];
+		for(int i = 0; i < len; i++){
+			res[i] = items[i];
+		}
+		return res;
+	}
 }

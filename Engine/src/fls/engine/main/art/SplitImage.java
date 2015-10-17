@@ -97,7 +97,9 @@ public class SplitImage {
     	this.pre_image.getRGB(0, 0, w, h, pixels, 0, w);
     	for(int x = 0; x < w; x++){
     		for(int y = 0; y < h; y++){
-    			if(pixels[x + y * w] == oc.getRGB())res.setRGB(x, y, nc.getRGB());
+    			if(pixels[x + y * w] == oc.getRGB()){
+    				res.setRGB(x, y, nc.getRGB());
+    			}
     		}
     	}
     	//JOptionPane.showMessageDialog(null,null,"New Image",JOptionPane.OK_CANCEL_OPTION,new ImageIcon(res));
