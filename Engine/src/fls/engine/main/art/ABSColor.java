@@ -17,16 +17,20 @@ public class ABSColor {
 	public static final ABSColor green = new ABSColor(0, 255, 0);
 	public static final ABSColor blue = new ABSColor(0, 0, 255);
 	
-	public ABSColor(int r,int g,int b){
+	public ABSColor(int a,int r,int g,int b){
 		this.r = r;
 		this.g = g;
 		this.b = b;
 		
-		this.rgb = (r << 16) + (g << 8) + (b);
+		this.rgb = (a << 24) + (r << 16) + (g << 8) + (b);
 	}
 	
 	public ABSColor(int c){
-		this(c, c, c);
+		this(255,c, c, c);
+	}
+	
+	public ABSColor(int r,int g,int b){
+		this(255,r,g,b);
 	}
 	
 	public int getRGB(){
@@ -47,5 +51,9 @@ public class ABSColor {
 	
 	public Color getRegColor(){
 		return new Color(this.r,this.g,this.b);
+	}
+	
+	public boolean isTheSame(ABSColor comp){
+		return false;
 	}
 }

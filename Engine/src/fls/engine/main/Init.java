@@ -169,10 +169,12 @@ public class Init extends Canvas implements Runnable {
     private void splash(Graphics g) {
         if (splash == null) splash = new SplitImage("/Splash.png").load();
         Art.fillScreen(this, g, ABSColor.black);
-        g.drawImage(splash, (width * scale / 2) - (splash.getWidth() / 2), (height * scale / 2) - (splash.getHeight() / 2), null);
+        int sx = (width * scale / 2) - (splash.getWidth() / 2);
+        int sy = (height * scale / 2) - (splash.getHeight() / 2);
+        g.drawImage(splash, sx, sy, null);
         String msg = "Version :" + version;
-        Art.randomColorFont("Splash-random", 100);
-        Art.drawString(msg, g, (getWidth() / 2) - msg.length() * 2, getHeight() - 75);
+        Art.useUserColor("Splash-random");
+        Art.drawString(msg, g, (getWidth() / 2) - msg.length() * 2, sy + splash.getHeight());
         if (ticks > 60 * 4) {
             Art.fillScreen(this, g, ABSColor.black);
             started = true;
@@ -182,6 +184,7 @@ public class Init extends Canvas implements Runnable {
 
     public void start() {
         if (running) return;
+        Art.randomColorFont("Splash-random", 50);
         thread = new Thread(this, this.title);
         thread.start();
         running = true;

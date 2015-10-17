@@ -40,7 +40,7 @@ public class Art {
     }
 
     private static String[] chars = {
-            "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "!?[]()\"'�<>:;+-=0123456789", "/\\.,|"
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "!?[]()\"'£<>:;+-=0123456789", "/\\.,|"
     };
 
     public static void drawString(String string, Graphics g, int x, int y) {
@@ -83,17 +83,25 @@ public class Art {
     
     public static void randomColorFont(String name,int ll){
     	Random rand = new Random();
-    	int r = (int)(ll + ((255 - ll) * rand.nextDouble())); 
-    	int g = (int)(ll + ((255 - ll) * rand.nextDouble()));
-    	int b = (int)(ll + ((255 - ll) * rand.nextDouble()));
+    	int r = (int)((255 - ll)  * rand.nextDouble()); 
+    	int g = (int)((255 - ll)  * rand.nextDouble());
+    	int b = (int)((255 - ll)  * rand.nextDouble());
     	ABSColor c = new ABSColor(r,g,b);
     	addUserColor(name, c);
     }
     
     public static void addUserColor(String name,ABSColor c){
+    	if(userColors.get(name) != null)return;
     	userColors.put(name, c);
     	addColoredFont(c);
-    	setTextColor(c);
+    	//setTextColor(c);
+    }
+    
+    public static void useUserColor(String name){
+    	ABSColor c = userColors.get(name);
+    	if(c != null){
+    		setTextColor(c);
+    	}
     }
 
     /**
@@ -120,7 +128,7 @@ public class Art {
         System.out.println("Screenshot has been saved");
     }
     
-    private static void showImage(BufferedImage i){
+    public static void showImage(BufferedImage i){
     	JOptionPane.showMessageDialog(null, null,"Image",JOptionPane.OK_OPTION,new ImageIcon(i));
     }
 }
