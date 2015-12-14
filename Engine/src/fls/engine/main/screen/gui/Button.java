@@ -11,10 +11,10 @@ import fls.engine.main.util.Point;
 
 public class Button extends GUIElement{
 
-	private Label label;
+	protected Label label;
 	
 	public Button(String text,Point pos) {
-		super(pos);
+		super("Id"+text,pos);
 		this.label = new Label(text,pos);
 		this.width = 50;
 		this.height = 10;
@@ -27,7 +27,7 @@ public class Button extends GUIElement{
 		g.fillRect(this.pos.getIX() - off, this.pos.getIY() - off, width + off * 2,height + off * 2);
 		g.setColor(Color.black);
 		g.fillRect(this.pos.getIX(), this.pos.getIY(), width, height);
-		Art.drawString(label.text, g, this.pos.getIX() + (width/2) - Font.getStringWidth(label.text)/2,this.pos.getIY() + (height/2) - (Art.FONTSIZE/2));
+		Art.drawString(label.getText(), g, this.pos.getIX() + (width/2) - Font.getStringWidth(label.getText())/2,this.pos.getIY() + (height/2) - (Art.FONTSIZE/2));
 		
 	}
 

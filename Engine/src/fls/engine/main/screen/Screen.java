@@ -20,6 +20,7 @@ public abstract class Screen{
 	 */
 	public final void init(Init game,Input in){
 		this.manager = new GUIManager();
+		this.manager.parent = this;
 		this.game = game;
 		this.input = in;
 	}

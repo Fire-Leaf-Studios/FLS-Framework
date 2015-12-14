@@ -1,5 +1,6 @@
 package fls.engine.main.art;
 
+import java.awt.AWTException;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Robot;
@@ -40,7 +41,7 @@ public class Art {
     }
 
     private static String[] chars = {
-            "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "!?[]()\"'£<>:;+-=0123456789", "/\\.,|"
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "!?[]()\"'£<>:;+-=0123456789", "/\\.,$"
     };
 
     public static void drawString(String string, Graphics g, int x, int y) {
@@ -103,6 +104,17 @@ public class Art {
     		setTextColor(c);
     	}
     }
+    
+    public static BufferedImage getGameImage(Init init){
+    	
+    	try {
+			return new Robot().createScreenCapture(init.frame.getBounds());
+		} catch (AWTException e) {
+			e.printStackTrace();
+			return null;
+		}
+    	
+    }
 
     /**
      * Creates a directory called Screenshots within the same folder as the .jar</br> and creates a screenshot whit in when this is called</br> screenshot wil be called 'screenshot.png' if it is the first</br> else it will be call 'screenshot_x.png'
@@ -112,7 +124,6 @@ public class Art {
     public static void saveScreenShot(Init init) {
         int atmpt = 1;
         try {
-            BufferedImage image = new Robot().createScreenCapture(init.frame.getBounds());
             File dir = new File(init.title + " Screenshots");
             if (!dir.exists()) dir.mkdir();
             File file = new File(dir.getPath() + "/" + init.title + " screenshot.png");
@@ -120,7 +131,7 @@ public class Art {
                 file = new File(dir.getPath() + "/" + init.title + " screenshot-" + atmpt + ".png");
                 atmpt++;
             }
-            ImageIO.write(image, "png", file);
+            ImageIO.write(getGameImage(init), "png", file);
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Somthing has gone wrong while, takeing a screen shot");

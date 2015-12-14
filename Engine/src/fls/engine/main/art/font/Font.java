@@ -9,8 +9,8 @@ public class Font {
 
     public static String letters = "" + //
             "ABCDEFGHIJKLMNOPQRSTUVWXYZ" + //
-            "!?[]()\"'�<>:;+-=0123456789" + //
-            "/\\.,|                     ";
+            "!?[]()\"'£<>:;+-=0123456789" + //
+            "/\\.,$|                    ";
 
     public static int getStringWidth(String s) {
         return s.length() * 6;

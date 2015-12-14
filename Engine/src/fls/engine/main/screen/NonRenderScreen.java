@@ -13,6 +13,7 @@ public class NonRenderScreen extends Screen{
 		
 	}
 
+	@SuppressWarnings("static-access")
 	@Override
 	public void render(Graphics g) {
 		Art.fillScreen(this.game, g, ABSColor.black);
