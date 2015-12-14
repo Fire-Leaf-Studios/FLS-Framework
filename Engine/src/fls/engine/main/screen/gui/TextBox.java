@@ -15,11 +15,11 @@ public class TextBox extends GUIElement {
 	private int ticks = 0;
 
 	public TextBox(String labelText, Point p) {
-		super(p);
+		super(labelText,p);
 		this.height = 18;
 		this.width = 100;
-		this.label = new Label(labelText,new Point(p.getIX() - Font.getStringWidth(labelText + " "),p.getIY() + (this.height/2) - Art.FONTSIZE/2));
-		this.text = "";
+		//this.label = new Label(labelText,new Point(p.getIX() - Font.getStringWidth(labelText + " "),p.getIY() + (this.height/2) - Art.FONTSIZE/2));
+		this.text = labelText;
 	}
 	
 	public TextBox(Point p){
@@ -39,7 +39,7 @@ public class TextBox extends GUIElement {
 		}
 		Art.drawString(visibleMessage, g, this.pos.getIX() + 3, this.pos.getIY() + (this.height / 2) - (Art.FONTSIZE / 2));
 		if(this.selected && ticks%60 > 30)Art.drawString("|", g, this.pos.getIX() + 3 + Font.getStringWidth(visibleMessage), this.pos.getIY() + (this.height / 2) - (Art.FONTSIZE / 2));
-		this.label.render(g);
+		//this.label.render(g);
 	}
 
 	@Override
@@ -52,6 +52,10 @@ public class TextBox extends GUIElement {
 	
 	public String toString(){
 		return this.text;
+	}
+	
+	public void setText(String s){
+		this.text = s;
 	}
 
 }

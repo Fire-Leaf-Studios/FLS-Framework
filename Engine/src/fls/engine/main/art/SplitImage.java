@@ -44,6 +44,7 @@ public class SplitImage {
             g.dispose();
             return res;
         } catch (Exception e) {
+        	e.printStackTrace();
             throw new RuntimeException(loc + " : can't be found");
         }
     }

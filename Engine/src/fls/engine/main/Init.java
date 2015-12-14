@@ -8,8 +8,6 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.JFrame;
 
-import android.graphics.Bitmap;
-import fls.engine.main.android.AndroidHandler;
 import fls.engine.main.art.ABSColor;
 import fls.engine.main.art.Art;
 import fls.engine.main.art.SplitImage;
@@ -23,6 +21,7 @@ public class Init extends Canvas implements Runnable {
     public static int width = 500;
     public static int height;
     public static int scale = 1;
+    public static int imageScale = 1;
     private boolean running = false;
     public BufferedImage image;
     public BufferedImage icon;
@@ -34,11 +33,11 @@ public class Init extends Canvas implements Runnable {
     private int ticks = 0;
     public int exframes;
     public JFrame frame;
-    public final String version = "0.3.6";
+    public final String version = "0.4A";
     private String[] creators;
     
-    public AndroidHandler androidHand;
     private boolean isAndroid;
+    private boolean isUsingCustom;
 
     private double desTicks = 60D;
     private Screen screen;
@@ -119,13 +118,13 @@ public class Init extends Canvas implements Runnable {
     private final void initTick() {
         if (!skipInit) {
             if (started) {
-            	screen.update();
             	screen.inputTick();
+            	screen.update();
             }
             if (!started) ticks++;
         } else {
-            screen.update();
             screen.inputTick();
+            screen.update();
         }
     }
 
@@ -142,22 +141,9 @@ public class Init extends Canvas implements Runnable {
         } else {
             this.screen.render(g);
         }
-        g.drawImage(image, 0, 0, width * scale, height * scale, null);
+        g.drawImage(image, 0, 0, width * imageScale, height *  imageScale, null);
         g.dispose();
         bs.show();
-        if(!isDesktop()){
-        	setSurfaceBitmap();
-        }
-    }
-    
-    private void setSurfaceBitmap(){
-    	int[] pixels = new int[WIDTH * HEIGHT];
-    	this.image.getRGB(0, 0, width, height, pixels, 0, width);
-    	this.androidHand.getSurface().b = Bitmap.createBitmap(pixels, width, height, Bitmap.Config.RGB_565);
-    	
-    	this.androidHand.getSurface().onDraw(this.androidHand.getCanavs());
-    	this.androidHand.getSurfaceHolder().unlockCanvasAndPost(this.androidHand.getCanavs());
-    	this.androidHand.setCanvas(this.androidHand.getSurfaceHolder().lockCanvas());
     }
 
     public void altRender() {
@@ -205,7 +191,7 @@ public class Init extends Canvas implements Runnable {
 
     private void postClose() {
         afterClose();
-        if (creators.length != 0) {
+        if (this.creators != null) {
             System.out.println(title + " made by:");
             if (creators.length > 1) {
                 for (int i = 0; i < creators.length - 1; i++) {
@@ -259,6 +245,7 @@ public class Init extends Canvas implements Runnable {
      */
     public void setScale(int s) {
         scale = s;
+        createWindow(this.title,this.width,this.height);
     }
 
     /**
@@ -348,15 +335,21 @@ public class Init extends Canvas implements Runnable {
     }
 
     /**
-     * replace image with a custom sied and type BufferedImage
+     * replace image with a custom sized and type BufferedImage
      * 
      * @param x
      * @param y
      * @param type
      */
-    public void useCustomBufferedImage(int x, int y, int type) {
+    public BufferedImage useCustomBufferedImage(int x, int y, int type) {
+    	this.isUsingCustom = true;
         BufferedImage b = new BufferedImage(x, y, type);
         image = b;
+        return b;
+    }
+    
+    public BufferedImage getImage(){
+    	return this.image;
     }
 
     /**
@@ -375,13 +368,16 @@ public class Init extends Canvas implements Runnable {
         skipInit = true;
     }
     
-    /**
-     * Used to identify and set up basic android functions
-     * @param ah
-     */
-    public void setupAndroidHandler(AndroidHandler ah){
-    	this.isAndroid = true;
-    	this.androidHand = ah;
+    public boolean isCustomImage(){
+    	return this.isUsingCustom;
+    }
+    
+    public int getDrawScale(){
+    	return this.imageScale;
+    }
+    
+    public void setImageScale(int i){
+    	this.imageScale = i;
     }
     
     /**
@@ -393,6 +389,6 @@ public class Init extends Canvas implements Runnable {
     }
 
     public static void main(String[] args) {
-        new Init();
+        new Init().start();
     }
 }

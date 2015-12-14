@@ -7,14 +7,22 @@ import fls.engine.main.util.Point;
 
 public abstract class GUIElement {
 
-	public int id;
+	private final String id;
 	public Point pos;
 	public int width,height;
 	public boolean selected = false;
 	public GUIManager manager;
+	protected int screenWidth, screenHeight;
 	
-	public GUIElement(Point pos){
+	public GUIElement(String id,Point pos){
 		this.pos = pos;
+		this.id = id;
+	}
+	
+	public void setManager(GUIManager m){
+		this.manager = m;
+		this.screenWidth = m.parent.game.width;
+		this.screenHeight = m.parent.game.height;
 	}
 	
 	
@@ -26,5 +34,18 @@ public abstract class GUIElement {
 		if(x >= this.pos.getIX() && y >= this.pos.getIY() && x <= this.pos.getIX() + this.width && y <= this.pos.getIY() + height){
 			this.selected = true;
 		}else this.selected = false;
+	}
+	
+	public GUIElement setPos(int x,int y){
+		this.pos = new Point(x,y);
+		return this;
+	}
+	
+	public void postInit(){
+		
+	}
+	
+	public String getId(){
+		return this.id;
 	}
 }
