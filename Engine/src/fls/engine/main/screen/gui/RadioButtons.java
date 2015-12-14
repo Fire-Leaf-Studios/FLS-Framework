@@ -5,45 +5,47 @@ import java.awt.Graphics;
 import fls.engine.main.input.Input;
 import fls.engine.main.util.Point;
 
-public class RadioButtons extends GUIElement{
-	
-	
-	private Label[] labels;
-	private ToggleButton[] toggels;
-	private int current;
-	private int pCurrent;
+public class RadioButtons extends GUIElement {
 
-	public RadioButtons(String id, Point pos,String... values) {
+	public RadioButton[] btns;
+	private int currentButton;
+
+	public RadioButtons(String id, Point pos, String... values) {
 		super(id, pos);
-		this.current = -1;
-		this.labels = new Label[values.length];
-		this.toggels = new ToggleButton[values.length];
-		for(int i = 0; i < values.length; i++){
-			this.labels[i] = new Label(values[i],pos.getIX(),pos.getIY());
-			this.toggels[i] = new ToggleButton(pos.getIX(), pos.getIY());
+		this.btns = new RadioButton[values.length];
+		for (int i = 0; i < this.btns.length; i++) {
+			this.btns[i] = new RadioButton(values[i], new Point(pos.getIX(), pos.getIY() + 16 * i));
 		}
 	}
 
 	@Override
 	public void render(Graphics g) {
-		for(int i = 0; i < this.labels.length; i++){
-			this.labels[i].render(g);
-			this.toggels[i].render(g);
+		for (int i = 0; i < this.btns.length; i++) {
+			this.btns[i].render(g);
 		}
+
 	}
 
 	@Override
 	public void update(Input in) {
-		this.pCurrent = this.current;
-		for(int i = 0; i < this.toggels.length; i++){
-			this.toggels[i].update(in);
-			if(this.toggels[i].isToggled())this.current = i;
+		if(!areAnySelected())this.currentButton = -1;
+		for (int i = 0; i < this.btns.length; i++) {
+			RadioButton b = this.btns[i];
+			b.update(in);
+			//if(b.selected)this.currentButton = i;
+			//if(i != this.currentButton)b.deselect();
 		}
 	}
 	
+	public int getCurrent(){
+		return this.currentButton;
+	}
 	
-	public int getSelectedValue(){
-		
+	private boolean areAnySelected(){
+		for(int i = 0; i < this.btns.length; i++){
+			if(this.btns[i].isSelected())return true;
+		}
+		return false;
 	}
 
 }
