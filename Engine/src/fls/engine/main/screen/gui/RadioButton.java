@@ -1,49 +1,58 @@
 package fls.engine.main.screen.gui;
 
+import java.awt.Color;
 import java.awt.Graphics;
 
 import fls.engine.main.input.Input;
+import fls.engine.main.screen.gui.listener.GUIEvent;
 import fls.engine.main.util.Point;
 
-public class RadioButtons extends GUIElement{
+public class RadioButton extends GUIElement{
 	
-	
-	private Label[] labels;
-	private ToggleButton[] toggels;
-	private int current;
-	private int pCurrent;
+	private final Label label;
+	private boolean isSelected;
+	private int delay;
+	public int id;
 
-	public RadioButtons(String id, Point pos,String... values) {
-		super(id, pos);
-		this.current = -1;
-		this.labels = new Label[values.length];
-		this.toggels = new ToggleButton[values.length];
-		for(int i = 0; i < values.length; i++){
-			this.labels[i] = new Label(values[i],pos.getIX(),pos.getIY());
-			this.toggels[i] = new ToggleButton(pos.getIX(), pos.getIY());
-		}
+	public RadioButton(String label, Point pos) {
+		super("Rad", pos);
+		this.width = 10;
+		this.height = 10;
+		this.label = new Label(label,new Point(pos.getIX() + width + 5,pos.getIY() + (this.height - 6) / 2));
+		this.delay = 0;
 	}
 
 	@Override
 	public void render(Graphics g) {
-		for(int i = 0; i < this.labels.length; i++){
-			this.labels[i].render(g);
-			this.toggels[i].render(g);
-		}
+		this.label.render(g);
+		
+		int off = 2;
+		g.setColor(Color.white);
+		g.fillRect(this.pos.getIX() - off, this.pos.getIY() - off, width + off * 2,height + off * 2);
+		g.setColor(this.isSelected?Color.green:Color.black);
+		g.fillRect(this.pos.getIX(), this.pos.getIY(), width, height);
 	}
 
 	@Override
-	public void update(Input in) {
-		this.pCurrent = this.current;
-		for(int i = 0; i < this.toggels.length; i++){
-			this.toggels[i].update(in);
-			if(this.toggels[i].isToggled())this.current = i;
+	public void update(Input i) {
+		if(delay > 0)delay--;
+		if(this.selected && delay == 0){
+			this.isSelected = true;
+			this.selected = false;
+			this.manager.fireEvent(new GUIEvent(this.manager,this));
+			this.delay = 10;
 		}
 	}
 	
-	
-	public int getSelectedValue(){
-		
+	public boolean isSelected(){
+		return this.isSelected;
 	}
+	
+	public void deselect(){
+		this.isSelected = false;
+	}
+	
+	
+	
 
 }

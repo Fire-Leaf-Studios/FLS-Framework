@@ -7,8 +7,9 @@ import fls.engine.main.util.Point;
 public class ToggleButton extends Button{
 
 	private boolean isToggled;
-	private String on;
-	private String off;
+	public String on;
+	public String off;
+	private int delay = 0;
 	
 	public ToggleButton(Point pos) {
 		this("False",pos);
@@ -16,6 +17,10 @@ public class ToggleButton extends Button{
 	
 	public ToggleButton(int x,int y){
 		this(new Point(x,y));
+	}
+	
+	public ToggleButton(String s,int x,int y){
+		this(s, new Point(x,y));
 	}
 	
 	public ToggleButton(String s, Point p){
@@ -26,12 +31,11 @@ public class ToggleButton extends Button{
 	}
 	
 	public void update(Input i){
-		if(this.selected){
-			toggle();
+		if(this.selected && delay-- <= 0){
 			this.manager.fireEvent(new GUIEvent(this,this));
-			this.selected = false;
+			this.delay = 10;
 		}
-		this.label.setText(this.isToggled?on:off);
+		if(on != null && off != null)this.label.setText(this.isToggled?on:off);
 	}
 	
 	public boolean isToggled(){
@@ -40,5 +44,6 @@ public class ToggleButton extends Button{
 	
 	public void toggle(){
 		this.isToggled = !this.isToggled;
+		this.selected = false;
 	}
 }
