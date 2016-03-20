@@ -52,4 +52,8 @@ public abstract class Screen{
 	public void eventRecieved(GUIEvent e){
 		
 	}
+	
+	public void keyTyped(char e){
+		
+	}
 }

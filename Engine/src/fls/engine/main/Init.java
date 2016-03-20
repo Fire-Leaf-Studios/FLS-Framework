@@ -387,6 +387,10 @@ public class Init extends Canvas implements Runnable {
     public boolean isDesktop(){
     	return !this.isAndroid;
     }
+    
+    public Screen getScreen(){
+    	return this.screen;
+    }
 
     public static void main(String[] args) {
         new Init().start();

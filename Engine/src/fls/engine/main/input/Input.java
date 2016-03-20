@@ -39,9 +39,10 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
     
     
     //Key definitions
-    public Key w,a,s,d;
+    public Key w,a,s,d,e,q;
     public Key up,down,left,right;
     public Key space,esc,z,x,c,shift;
+    private Init game;
 
     /**
      * The class that handles all of the input in our games
@@ -63,6 +64,8 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
             this.a = new Key(this,KeyEvent.VK_A);
             this.s = new Key(this,KeyEvent.VK_S);
             this.d = new Key(this,KeyEvent.VK_D);
+            this.e = new Key(this,KeyEvent.VK_E);
+            this.q = new Key(this,KeyEvent.VK_Q);
             
             this.up = new Key(this,KeyEvent.VK_UP);
             this.down = new Key(this,KeyEvent.VK_DOWN);
@@ -95,6 +98,7 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
             System.err.println("Not a valid type entered");
             break;
         }
+    	this.game = game;
     }
     
     
@@ -158,7 +162,7 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
      */
     public boolean isKeyPressed(Key k){
     	if(!this.addedKeyboard)return false;
-    	return k.clicked;
+    	else return k.clicked;
     }
     
     /**
@@ -167,6 +171,7 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
      * @return boolean
      */
     public boolean isKeyHeld(Key k){
+    	if(!this.addedKeyboard)return false;
     	return k.down;
     }
 
@@ -308,6 +313,7 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
     }
 
     public void keyTyped(KeyEvent e) {
+    	this.game.getScreen().keyTyped(e.getKeyChar());
     }
 
     public void mouseClicked(MouseEvent arg0) {
@@ -368,7 +374,11 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
 	
 	
 	private void toggle(int ke, boolean p){
-		if(ke == this.w.key)this.w.toggle(p);
+		for(int i = 0; i < this.keys.size(); i++){
+			Key k = this.keys.get(i);
+			if(k.key == ke)k.toggle(p);
+		}
+		/**if(ke == this.w.key)this.w.toggle(p);
 		if(ke == this.s.key)this.s.toggle(p);
 		if(ke == this.a.key)this.a.toggle(p);
 		if(ke == this.d.key)this.d.toggle(p);
@@ -384,7 +394,7 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
 		if(ke == this.x.key)this.x.toggle(p);
 		if(ke == this.c.key)this.c.toggle(p);
 		if(ke == this.photoKey.key)this.photoKey.toggle(p);
-		if(ke == this.shift.key)this.shift.toggle(p);
+		if(ke == this.shift.key)this.shift.toggle(p);**/
 	}
 	
 	public void addKey(Key k){

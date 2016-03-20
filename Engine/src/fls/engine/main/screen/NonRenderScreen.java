@@ -4,9 +4,9 @@ import java.awt.Graphics;
 
 import fls.engine.main.art.ABSColor;
 import fls.engine.main.art.Art;
+import fls.engine.main.io.FileIO;
 
 public class NonRenderScreen extends Screen{
-
 	
 	@Override
 	public void update() {
