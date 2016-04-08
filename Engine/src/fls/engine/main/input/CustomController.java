@@ -7,6 +7,15 @@ public class CustomController {
 
 	private Controller base;
 	
+	public static final String start = "Start";
+	public static final String select = "Select";
+	public static final String a = "A";
+	public static final String b = "B";
+	public static final String x = "X";
+	public static final String y = "Y";
+	public static final String special = "Mode";
+	
+	
 	public CustomController(Controller c){
 		this.base = c;
 	}
@@ -29,31 +38,35 @@ public class CustomController {
 	}
 	
 	public boolean isA(){
-		return isButton("A");
+		return isButton(a);
 	}
 	
 	public boolean isB(){
-		return isButton("B");
+		return isButton(b);
 	}
 	
 	public boolean isX(){
-		return isButton("X");
+		return isButton(x);
 	}
 	
 	public boolean isY(){
-		return isButton("Y");
+		return isButton(y);
 	}
 	
 	public boolean isStart(){
-		return isButton("Start");
+		return isButton(start);
 	}
 	
 	public boolean isSelect(){
-		return isButton("Select");
+		return isButton(select);
 	}
 	
-	public boolean isXBoxBtn(){
-		return isButton("Mode");
+	/**
+	 * 
+	 * @return true is the controllers 'special' button is pressed else returns false
+	 */
+	public boolean isSpecialBtn(){
+		return isButton(special);
 	}
 	
 	public boolean isRightStickIn(){

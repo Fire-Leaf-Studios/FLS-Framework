@@ -55,7 +55,7 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
         case KEYS:
         	if(this.preDefs != null)break;
             System.out.println("Added Key input");
-            game.addKeyListener(this);
+            game.frame.addKeyListener(this);
             this.keys = new ArrayList<Key>();
             this.preDefs = new HashMap<String,int[]>();
             this.addedKeyboard = true;
@@ -83,15 +83,17 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
         case MOUSE:
         	this.addedMouse = true;
             System.out.println("Added Mouse input");
-            game.addMouseListener(this);
-            game.addMouseMotionListener(this);
+            game.frame.addMouseListener(this);
+            game.frame.addMouseMotionListener(this);
             break;
         case CONTROLLER:
         	this.addedControllers = true;
             System.out.println("Added Controller input");
             conts = ControllerEnvironment.getDefaultEnvironment().getControllers();
             for(Controller c : conts){
-            	System.out.println(c.getName());
+            	if(c.getType() == Controller.Type.GAMEPAD){
+            		System.out.println(c.getName());
+            	}
             }
             break;
         default:
@@ -105,13 +107,13 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
     /**
      * A function called to set the primary controller, useful for things like start screens
      */
-    public void setPrimaryContoller(){
+    public void setPrimaryContoller(String key){
     	if(!this.addedControllers)return;
     	for(Controller c : conts){
     		c.poll();
     		Component[] comps = c.getComponents();
     		for(Component comp : comps){
-    			if(comp.getIdentifier().getName() == "Start" && c.getType() == Controller.Type.GAMEPAD){
+    			if(comp.getIdentifier().getName() == key && c.getType() == Controller.Type.GAMEPAD){
     				if(comp.getPollData() == 1.0f){
     					this.primaryController = new CustomController(c);
     					return;
@@ -119,6 +121,10 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
     			}
     		}
     	}
+    }
+    
+    public void setPrimaryControllerWithStart(){
+    	this.setPrimaryContoller(CustomController.start);
     }
     
     public CustomController getController(){
