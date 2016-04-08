@@ -91,9 +91,7 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
             System.out.println("Added Controller input");
             conts = ControllerEnvironment.getDefaultEnvironment().getControllers();
             for(Controller c : conts){
-            	if(c.getType() == Controller.Type.GAMEPAD){
-            		System.out.println(c.getName());
-            	}
+            	System.out.println(c.getName());
             }
             break;
         default:
