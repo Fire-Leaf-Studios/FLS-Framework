@@ -31,6 +31,7 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
     
     private HashMap<String,int[]> preDefs;
     private Controller[] conts;
+    private Controller[] conrtollers;
     private CustomController primaryController;
 
     public MouseButton leftMouseButton = new MouseButton();
@@ -90,8 +91,22 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
         	this.addedControllers = true;
             System.out.println("Added Controller input");
             conts = ControllerEnvironment.getDefaultEnvironment().getControllers();
+            int num = 0;
             for(Controller c : conts){
-            	System.out.println(c.getName());
+            	if(c.getType() == Controller.Type.GAMEPAD || c.getType() == Controller.Type.STICK){
+            		System.out.println(c.getName());
+            		num++;
+            	}
+            }
+            
+            this.conrtollers = new Controller[num];
+            
+            num = 0;
+            for(Controller c : conts){
+            	if(c.getType() == Controller.Type.GAMEPAD || c.getType() == Controller.Type.STICK){
+            		this.conrtollers[num] = c;
+            		num++;
+            	}
             }
             break;
         default:
@@ -105,24 +120,44 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
     /**
      * A function called to set the primary controller, useful for things like start screens
      */
-    public void setPrimaryContoller(String key){
-    	if(!this.addedControllers)return;
+    public void setPrimaryController(String key){
+    	if(!this.addedControllers || this.primaryController != null)return;
     	for(Controller c : conts){
     		c.poll();
     		Component[] comps = c.getComponents();
     		for(Component comp : comps){
-    			if(comp.getIdentifier().getName() == key && c.getType() == Controller.Type.GAMEPAD){
-    				if(comp.getPollData() == 1.0f){
-    					this.primaryController = new CustomController(c);
-    					return;
+    			if(c.getType() == Controller.Type.GAMEPAD || c.getType() == Controller.Type.STICK){
+    				String xb = CustomController.getConrtollerCorrectButton(key, true);
+    				String nxb = CustomController.getConrtollerCorrectButton(key, false);
+    				String n = comp.getIdentifier().getName(); 
+    				if(n.equals(xb) || n.equals(nxb)){
+	    				if(comp.getPollData() == 1.0f){
+	    					if(n == xb){
+	    						this.primaryController = new CustomController(c,true);
+	    					}else{
+	    						System.out.println("IO");
+	    						this.primaryController = new CustomController(c,false);
+	    					}
+	    					return;
+	    				}
     				}
     			}
     		}
     	}
     }
     
+    public void showData(Controller c){
+    	Component[] comps = c.getComponents();
+    	System.out.println("--------------");
+    	System.out.println(c.getName());
+		for(Component comp : comps){
+			System.out.println(comp.getIdentifier().getName() + ":" + comp.getPollData());
+		}
+    	System.out.println("--------------");
+    }
+    
     public void setPrimaryControllerWithStart(){
-    	this.setPrimaryContoller(CustomController.start);
+    	this.setPrimaryController(CustomController.start);
     }
     
     public CustomController getController(){
