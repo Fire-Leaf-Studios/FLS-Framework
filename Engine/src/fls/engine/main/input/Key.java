@@ -20,7 +20,6 @@ public class Key{
 	}
 	
 	public void tick(){
-		//System.out.println(this.absorbs < this.presses);
 		if(absorbs < presses){
 			absorbs++;
 			clicked = true;

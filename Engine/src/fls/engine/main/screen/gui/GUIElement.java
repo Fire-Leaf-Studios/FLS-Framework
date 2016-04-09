@@ -2,6 +2,7 @@ package fls.engine.main.screen.gui;
 
 import java.awt.Graphics;
 
+import fls.engine.main.Init;
 import fls.engine.main.input.Input;
 import fls.engine.main.util.Point;
 
@@ -21,8 +22,8 @@ public abstract class GUIElement {
 	
 	public void setManager(GUIManager m){
 		this.manager = m;
-		this.screenWidth = m.parent.game.width;
-		this.screenHeight = m.parent.game.height;
+		this.screenWidth = Init.width;
+		this.screenHeight = Init.height;
 	}
 	
 	

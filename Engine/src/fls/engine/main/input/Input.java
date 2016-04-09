@@ -31,6 +31,7 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
     
     private HashMap<String,int[]> preDefs;
     private Controller[] conts;
+    private Controller[] conrtollers;
     private CustomController primaryController;
 
     public MouseButton leftMouseButton = new MouseButton();
@@ -39,9 +40,10 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
     
     
     //Key definitions
-    public Key w,a,s,d;
+    public Key w,a,s,d,e,q;
     public Key up,down,left,right;
     public Key space,esc,z,x,c,shift;
+    private Init game;
 
     /**
      * The class that handles all of the input in our games
@@ -54,7 +56,7 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
         case KEYS:
         	if(this.preDefs != null)break;
             System.out.println("Added Key input");
-            game.addKeyListener(this);
+            game.frame.addKeyListener(this);
             this.keys = new ArrayList<Key>();
             this.preDefs = new HashMap<String,int[]>();
             this.addedKeyboard = true;
@@ -63,6 +65,8 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
             this.a = new Key(this,KeyEvent.VK_A);
             this.s = new Key(this,KeyEvent.VK_S);
             this.d = new Key(this,KeyEvent.VK_D);
+            this.e = new Key(this,KeyEvent.VK_E);
+            this.q = new Key(this,KeyEvent.VK_Q);
             
             this.up = new Key(this,KeyEvent.VK_UP);
             this.down = new Key(this,KeyEvent.VK_DOWN);
@@ -80,41 +84,80 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
         case MOUSE:
         	this.addedMouse = true;
             System.out.println("Added Mouse input");
-            game.addMouseListener(this);
-            game.addMouseMotionListener(this);
+            game.frame.addMouseListener(this);
+            game.frame.addMouseMotionListener(this);
             break;
         case CONTROLLER:
         	this.addedControllers = true;
             System.out.println("Added Controller input");
             conts = ControllerEnvironment.getDefaultEnvironment().getControllers();
+            int num = 0;
             for(Controller c : conts){
-            	System.out.println(c.getName());
+            	if(c.getType() == Controller.Type.GAMEPAD || c.getType() == Controller.Type.STICK){
+            		System.out.println(c.getName());
+            		num++;
+            	}
+            }
+            
+            this.conrtollers = new Controller[num];
+            
+            num = 0;
+            for(Controller c : conts){
+            	if(c.getType() == Controller.Type.GAMEPAD || c.getType() == Controller.Type.STICK){
+            		this.conrtollers[num] = c;
+            		num++;
+            	}
             }
             break;
         default:
             System.err.println("Not a valid type entered");
             break;
         }
+    	this.game = game;
     }
     
     
     /**
      * A function called to set the primary controller, useful for things like start screens
      */
-    public void setPrimaryContoller(){
-    	if(!this.addedControllers)return;
+    public void setPrimaryController(String key){
+    	if(!this.addedControllers || this.primaryController != null)return;
     	for(Controller c : conts){
     		c.poll();
     		Component[] comps = c.getComponents();
     		for(Component comp : comps){
-    			if(comp.getIdentifier().getName() == "Start" && c.getType() == Controller.Type.GAMEPAD){
-    				if(comp.getPollData() == 1.0f){
-    					this.primaryController = new CustomController(c);
-    					return;
+    			if(c.getType() == Controller.Type.GAMEPAD || c.getType() == Controller.Type.STICK){
+    				String xb = CustomController.getConrtollerCorrectButton(key, true);
+    				String nxb = CustomController.getConrtollerCorrectButton(key, false);
+    				String n = comp.getIdentifier().getName(); 
+    				if(n.equals(xb) || n.equals(nxb)){
+	    				if(comp.getPollData() == 1.0f){
+	    					if(n == xb){
+	    						this.primaryController = new CustomController(c,true);
+	    					}else{
+	    						System.out.println("IO");
+	    						this.primaryController = new CustomController(c,false);
+	    					}
+	    					return;
+	    				}
     				}
     			}
     		}
     	}
+    }
+    
+    public void showData(Controller c){
+    	Component[] comps = c.getComponents();
+    	System.out.println("--------------");
+    	System.out.println(c.getName());
+		for(Component comp : comps){
+			System.out.println(comp.getIdentifier().getName() + ":" + comp.getPollData());
+		}
+    	System.out.println("--------------");
+    }
+    
+    public void setPrimaryControllerWithStart(){
+    	this.setPrimaryController(CustomController.start);
     }
     
     public CustomController getController(){
@@ -158,7 +201,7 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
      */
     public boolean isKeyPressed(Key k){
     	if(!this.addedKeyboard)return false;
-    	return k.clicked;
+    	else return k.clicked;
     }
     
     /**
@@ -167,6 +210,7 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
      * @return boolean
      */
     public boolean isKeyHeld(Key k){
+    	if(!this.addedKeyboard)return false;
     	return k.down;
     }
 
@@ -308,6 +352,7 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
     }
 
     public void keyTyped(KeyEvent e) {
+    	this.game.getScreen().keyTyped(e.getKeyChar());
     }
 
     public void mouseClicked(MouseEvent arg0) {
@@ -368,7 +413,11 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
 	
 	
 	private void toggle(int ke, boolean p){
-		if(ke == this.w.key)this.w.toggle(p);
+		for(int i = 0; i < this.keys.size(); i++){
+			Key k = this.keys.get(i);
+			if(k.key == ke)k.toggle(p);
+		}
+		/**if(ke == this.w.key)this.w.toggle(p);
 		if(ke == this.s.key)this.s.toggle(p);
 		if(ke == this.a.key)this.a.toggle(p);
 		if(ke == this.d.key)this.d.toggle(p);
@@ -384,7 +433,7 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
 		if(ke == this.x.key)this.x.toggle(p);
 		if(ke == this.c.key)this.c.toggle(p);
 		if(ke == this.photoKey.key)this.photoKey.toggle(p);
-		if(ke == this.shift.key)this.shift.toggle(p);
+		if(ke == this.shift.key)this.shift.toggle(p);**/
 	}
 	
 	public void addKey(Key k){

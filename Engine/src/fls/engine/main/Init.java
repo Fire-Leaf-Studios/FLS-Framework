@@ -245,7 +245,7 @@ public class Init extends Canvas implements Runnable {
      */
     public void setScale(int s) {
         scale = s;
-        createWindow(this.title,this.width,this.height);
+        createWindow(this.title,Init.width,Init.height);
     }
 
     /**
@@ -373,11 +373,11 @@ public class Init extends Canvas implements Runnable {
     }
     
     public int getDrawScale(){
-    	return this.imageScale;
+    	return Init.imageScale;
     }
     
     public void setImageScale(int i){
-    	this.imageScale = i;
+    	Init.imageScale = i;
     }
     
     /**
@@ -386,6 +386,10 @@ public class Init extends Canvas implements Runnable {
      */
     public boolean isDesktop(){
     	return !this.isAndroid;
+    }
+    
+    public Screen getScreen(){
+    	return this.screen;
     }
 
     public static void main(String[] args) {

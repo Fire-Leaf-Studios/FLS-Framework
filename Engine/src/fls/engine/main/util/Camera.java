@@ -1,5 +1,7 @@
 package fls.engine.main.util;
 
+import fls.engine.main.util.Point;
+
 public class Camera {
 
 	public int w, h;
