@@ -105,14 +105,17 @@ public class Art {
     	}
     }
     
-    public static BufferedImage getGameImage(Init init){
-    	
-    	try {
-			return new Robot().createScreenCapture(init.frame.getBounds());
-		} catch (AWTException e) {
-			e.printStackTrace();
-			return null;
-		}
+    public static BufferedImage getGameImage(Init init, boolean image){
+    	if(image){
+    		return init.image;
+    	}else{
+	    	try {
+				return new Robot().createScreenCapture(init.frame.getBounds());
+			} catch (AWTException e) {
+				e.printStackTrace();
+				return null;
+			}
+    	}
     	
     }
 
@@ -121,7 +124,7 @@ public class Art {
      * 
      * @param init
      */
-    public static void saveScreenShot(Init init) {
+    public static void saveScreenShot(Init init, boolean image) {
         int atmpt = 1;
         try {
             File dir = new File(init.title + " Screenshots");
@@ -131,7 +134,7 @@ public class Art {
                 file = new File(dir.getPath() + "/" + init.title + " screenshot-" + atmpt + ".png");
                 atmpt++;
             }
-            ImageIO.write(getGameImage(init), "png", file);
+            ImageIO.write(getGameImage(init, image), "png", file);
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Somthing has gone wrong while, takeing a screen shot");

@@ -10,10 +10,7 @@ public class NonRenderScreen extends Screen{
 	
 	@Override
 	public void update() {
-		this.input.setPrimaryController(CustomController.a);
-		if(this.input.getController() != null){
-			System.out.println(this.input.getController().isA());
-		}
+		
 	}
 
 	@SuppressWarnings("static-access")
