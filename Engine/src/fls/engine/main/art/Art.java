@@ -137,7 +137,7 @@ public class Art {
             ImageIO.write(getGameImage(init, image), "png", file);
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("Somthing has gone wrong while, takeing a screen shot");
+            System.out.println("Somthing has gone wrong while, taking a screen shot");
         }
         System.out.println("Screenshot has been saved");
     }

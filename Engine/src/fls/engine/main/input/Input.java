@@ -16,7 +16,11 @@ import net.java.games.input.ControllerEnvironment;
 import net.java.games.input.ControllerEvent;
 import net.java.games.input.ControllerListener;
 
+<<<<<<< HEAD
 public class Input implements KeyListener, MouseListener, MouseMotionListener, ControllerListener {
+=======
+public class Input implements KeyListener, MouseListener, MouseMotionListener{
+>>>>>>> fc4cf36fc2988a8d71be358303cd0809fc6387fc
 
     public static final int KEYS = 0, MOUSE = 1, CONTROLLER = 2;
     private Key photoKey;
@@ -117,7 +121,9 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener, C
     	for(Controller c : this.conrtollers){
     		c.poll();
     		Component[] comps = c.getComponents();
+    		System.out.println("---------");
     		for(Component comp : comps){
+    			System.out.println(comp.getIdentifier().getName() + " : " + comp.getPollData());
     			if(c.getType() == Controller.Type.GAMEPAD || c.getType() == Controller.Type.STICK){
     				String xb = CustomController.getConrtollerCorrectButton(key, true);
     				String nxb = CustomController.getConrtollerCorrectButton(key, false);
@@ -134,6 +140,7 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener, C
     				}
     			}
     		}
+    		System.out.println("---------");
     	}
     }
     
