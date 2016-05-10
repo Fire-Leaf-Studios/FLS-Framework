@@ -259,7 +259,7 @@ public class Init extends Canvas implements Runnable {
     public void createWindow(String title, int width) {
         this.title = title;
         Init.width = width;
-        int height = Init.height = (width / 12) * 9;
+        int height = Init.height = (width / 16) * 9;
         setTitle(title);
         setSize(width * scale, height * scale);
         setPreferredSize(new Dimension(width * scale, height * scale));
@@ -341,9 +341,9 @@ public class Init extends Canvas implements Runnable {
      * @param y
      * @param type
      */
-    public BufferedImage useCustomBufferedImage(int x, int y, int type) {
+    public BufferedImage useCustomBufferedImage(int x, int y, boolean alpha) {
     	this.isUsingCustom = true;
-        BufferedImage b = new BufferedImage(x, y, type);
+        BufferedImage b = new BufferedImage(x, y, alpha?BufferedImage.TYPE_INT_ARGB:BufferedImage.TYPE_INT_RGB);
         image = b;
         return b;
     }
