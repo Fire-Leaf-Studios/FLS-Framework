@@ -13,6 +13,7 @@ public class Renderer {
 	private boolean[] dirty;
 	private int w,h;
 	
+	public int scale;
 	private int xOff, yOff;
 	
 	public Renderer(BufferedImage img){
@@ -22,19 +23,17 @@ public class Renderer {
 		
 		this.pixles = ((DataBufferInt)img.getRaster().getDataBuffer()).getData();
 		this.dirty = new boolean[h];
-		
 		setOffset(0, 0);
+		setScale(1);
 	}
 	
 	public void finaliseRender(){
 		for(int y = 0; y < this.h; y++){
 			if(this.dirty[y]){
-				int[] row = getPixels(y);
-				img.setRGB(0, y, w, 1, row, 0, w);
+				img.setRGB(0, y, w, 1, getPixels(y), 0, w);
+				this.dirty[y] = false;
 			}
 		}
-		
-		reset();
 	}
 	
 	private int[] getPixels(int y){
@@ -103,16 +102,10 @@ public class Renderer {
 	}
 	
 	public int makeRGB(int r, int g, int b){
-		if(r > 255)r = 255;
-		if(g > 255)g = 255;
-		if(b > 255)b = 255;
+		r = clamp(r);
+		g = clamp(g);
+		b = clamp(b);
 		return (r << 16) | (g << 8) | b;
-	}
-	
-	private void reset(){
-		for(int i = 0; i < this.dirty.length; i++){
-			this.dirty[i] = false;
-		}
 	}
 	
 	public void fill(int c){
@@ -145,10 +138,8 @@ public class Renderer {
 	}
 	
 	public void shadeCircle(int x,int y,int r){
-		
 		int top = y - r;
 		int left = x - r;
-		
 		for(int dx = 0; dx < r * 2; dx++){
 			for(int dy = 0; dy < r * 2; dy++){
 				
@@ -208,15 +199,15 @@ public class Renderer {
 	}
 	
 	public void drawCircle(int x,int y,int r, int c){
+		if(c == -1)c = makeRGB(255,0,0);
 		for(int xx = -r; xx < r; xx++){
 			for(int yy = -r; yy < r; yy++){
 				
 				
 				int x2 = xx * xx;
-				int y2 = yy * yy;
-				
+				int y2 = yy * yy;			
 				if(x2 + y2 < r * r){
-					this.setPixel(x + xx, y + yy, c==-1?makeRGB(255,0,0):c);
+					this.setPixel(x + xx, y + yy, c);
 				}
 			}
 		}
@@ -225,5 +216,17 @@ public class Renderer {
 	public int getColor(int x,int y){
 		if(!isValid(x,y))return -1;
 		return this.pixles[x + y * this.w];
+	}
+	
+	public void setScale(int s){
+		if(s < 0)s = -s;
+		if(s == 0)s = 1;
+		this.scale = s;
+	}
+	
+	public int clamp(int x){
+		if(x < 0) x = 0;
+		if(x > 255) x = 255;
+		return x;
 	}
 }

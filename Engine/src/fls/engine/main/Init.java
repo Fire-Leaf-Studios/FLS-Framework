@@ -31,7 +31,8 @@ public class Init extends Canvas implements Runnable {
     private boolean printFPS = false;
     private boolean skipInit = false;
     private int ticks = 0;
-    public int exframes;
+    private int desFrames;
+    public int exFrames;
     public JFrame frame;
     public final String version = "0.4A";
     private String[] creators;
@@ -58,6 +59,7 @@ public class Init extends Canvas implements Runnable {
              frame.setIconImage(this.icon);
          }
          setScreen(new NonRenderScreen());
+         setDesFrames(30);
     }
     
     public Init(){
@@ -70,47 +72,42 @@ public class Init extends Canvas implements Runnable {
 
     public void run() {
         requestFocus();
+        
         long lastTime = System.nanoTime();
-        double nsPerTick = 1000000000D / desTicks;
-
-        int ticks = 0;
-        int frames = 0;
-        long lastTimer = System.currentTimeMillis();
-        double delta = 0;
-
-        System.out.println("Made with [2D Engine]");
-
-        while (running) {
-            long now = System.nanoTime();
-            delta += (now - lastTime) / nsPerTick;
-            lastTime = now;
-            boolean shouldRender = true;
-
-            while (delta >= 1) {
-                ticks++;
-                initTick();
-                delta -= 1;
-                shouldRender = true;
-            }
-
-            try {
-                Thread.sleep(2);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            if (shouldRender) {
-                frames++;
-                initRender();
-            }
-            if (System.currentTimeMillis() - lastTimer >= 1000) {
-                lastTimer += 1000;
-                exframes = frames;
-                if (printFPS) {
-                    System.out.println("Frames : " + frames + " Ticks : " + ticks);
-                }
-                frames = 0;
-                ticks = 0;
-            }
+        double unprocessed = 0;
+        double nsPerTick = 1000000000.0 / this.desTicks;
+        long lastTimer1 = System.currentTimeMillis();
+        
+        while(running){
+        	long now = System.nanoTime();
+        	unprocessed += (now - lastTime) / nsPerTick;
+        	lastTime = now;
+        	boolean shouldRender = true;
+        	
+        	while(unprocessed >= 1){
+        		this.ticks ++;
+        		initTick();
+        		unprocessed -= 1;
+        		shouldRender = true;
+        	}
+        	
+        	try{
+        		Thread.sleep(2);
+        	}catch(Exception e){
+        		e.printStackTrace();
+        	}
+        	
+        	if(shouldRender){
+        		initRender();
+        		this.exFrames ++;
+        	}
+        	
+        	if(System.currentTimeMillis() - lastTimer1 > 1000){
+        		lastTimer1 += 1000;
+        		System.out.println("Frames: " + this.exFrames + ", Ticks: " + this.ticks);
+        		this.exFrames = 0;
+        		this.ticks = 0;
+        	}
         }
         stop();
     }
@@ -121,7 +118,6 @@ public class Init extends Canvas implements Runnable {
             	screen.inputTick();
             	screen.update();
             }
-            if (!started) ticks++;
         } else {
             screen.inputTick();
             screen.update();
@@ -144,6 +140,7 @@ public class Init extends Canvas implements Runnable {
         g.drawImage(image, 0, 0, width * imageScale, height *  imageScale, null);
         g.dispose();
         bs.show();
+        this.exFrames ++;
     }
 
     public void altRender() {
@@ -316,7 +313,7 @@ public class Init extends Canvas implements Runnable {
      * @return
      */
     public int getFPS() {
-        return exframes;
+        return exFrames;
     }
 
     /**
@@ -390,6 +387,10 @@ public class Init extends Canvas implements Runnable {
     
     public Screen getScreen(){
     	return this.screen;
+    }
+    
+    public void setDesFrames(int amt){
+    	this.desFrames = amt;
     }
 
     public static void main(String[] args) {
