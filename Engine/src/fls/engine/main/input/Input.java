@@ -13,8 +13,14 @@ import fls.engine.main.Init;
 import net.java.games.input.Component;
 import net.java.games.input.Controller;
 import net.java.games.input.ControllerEnvironment;
+import net.java.games.input.ControllerEvent;
+import net.java.games.input.ControllerListener;
 
+<<<<<<< HEAD
+public class Input implements KeyListener, MouseListener, MouseMotionListener, ControllerListener {
+=======
 public class Input implements KeyListener, MouseListener, MouseMotionListener{
+>>>>>>> fc4cf36fc2988a8d71be358303cd0809fc6387fc
 
     public static final int KEYS = 0, MOUSE = 1, CONTROLLER = 2;
     private Key photoKey;
@@ -37,6 +43,8 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener{
     public MouseButton leftMouseButton = new MouseButton();
     public MouseButton rightMouseButton = new MouseButton();
     public Mouse mouse = new Mouse(); // the ONLY mouse the get X & Y;
+    
+    private ControllerEnvironment ce;
     
     
     //Key definitions
@@ -90,24 +98,11 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener{
         case CONTROLLER:
         	this.addedControllers = true;
             System.out.println("Added Controller input");
-            conts = ControllerEnvironment.getDefaultEnvironment().getControllers();
-            int num = 0;
-            for(Controller c : conts){
-            	if(c.getType() == Controller.Type.GAMEPAD || c.getType() == Controller.Type.STICK){
-            		System.out.println(c.getName());
-            		num++;
-            	}
-            }
             
-            this.conrtollers = new Controller[num];
-            
-            num = 0;
-            for(Controller c : conts){
-            	if(c.getType() == Controller.Type.GAMEPAD || c.getType() == Controller.Type.STICK){
-            		this.conrtollers[num] = c;
-            		num++;
-            	}
-            }
+            this.ce = ControllerEnvironment.getDefaultEnvironment(); 
+            this.ce.addControllerListener(this);
+            this.conts = this.ce.getControllers();
+            this.scanForControllers(true);
             break;
         default:
             System.err.println("Not a valid type entered");
@@ -122,7 +117,8 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener{
      */
     public void setPrimaryController(String key){
     	if(!this.addedControllers || this.primaryController != null)return;
-    	for(Controller c : conts){
+    	this.scanForControllers(false);
+    	for(Controller c : this.conrtollers){
     		c.poll();
     		Component[] comps = c.getComponents();
     		System.out.println("---------");
@@ -137,7 +133,6 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener{
 	    					if(n == xb){
 	    						this.primaryController = new CustomController(c,true);
 	    					}else{
-	    						System.out.println("IO");
 	    						this.primaryController = new CustomController(c,false);
 	    					}
 	    					return;
@@ -147,6 +142,29 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener{
     		}
     		System.out.println("---------");
     	}
+    }
+    
+    public void scanForControllers(boolean names){
+    	this.ce = ControllerEnvironment.getDefaultEnvironment();
+    	this.conts = this.ce.getControllers();
+    	
+    	int num = 0;
+        for(Controller c : conts){
+        	if(c.getType() == Controller.Type.GAMEPAD || c.getType() == Controller.Type.STICK){
+        		if(names) System.out.println(c.getName());
+        		num++;
+        	}
+        }
+        
+        this.conrtollers = new Controller[num];
+        
+        num = 0;
+        for(Controller c : conts){
+        	if(c.getType() == Controller.Type.GAMEPAD || c.getType() == Controller.Type.STICK){
+        		this.conrtollers[num] = c;
+        		num++;
+        	}
+        }
     }
     
     public void showData(Controller c){
@@ -441,5 +459,17 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener{
 	
 	public void addKey(Key k){
 		this.keys.add(k);
+	}
+
+
+	@Override
+	public void controllerAdded(ControllerEvent e) {
+		System.out.println(e.getController().getName());
+	}
+
+
+	@Override
+	public void controllerRemoved(ControllerEvent e) {
+		System.out.println(e.getController().getName());
 	}
 }

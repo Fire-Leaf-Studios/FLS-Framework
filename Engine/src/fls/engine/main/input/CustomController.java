@@ -2,6 +2,7 @@ package fls.engine.main.input;
 
 import net.java.games.input.Component;
 import net.java.games.input.Controller;
+import net.java.games.input.Rumbler;
 
 public class CustomController {
 
@@ -36,9 +37,15 @@ public class CustomController {
 	public static final int povW = 6;
 	public static final int povNW = 7;
 	
+	private final boolean canRumble;
+	
 	public CustomController(Controller c, boolean x){
 		this.base = c;
 		this.xbox = x;
+		if(c.getRumblers().length > 0)canRumble = true;
+		else canRumble = false;
+		
+		rumble();
 	}
 	
 	private float getComonentData(String s){
@@ -47,14 +54,15 @@ public class CustomController {
 		for(Component com : comps){
 			if(com.getIdentifier().getName().equals(getConrtollerCorrectButton(s,this.xbox)))return com.getPollData();
 		}
-		return 0.0f;
+		return -1f;
 	}
 	
 	private boolean isButton(String btn){
-		return getComonentData(btn)==1.0f?true:false;
+		float d = getComonentData(btn);
+		return d==1.0f?true:false;
 	}
 	
-	private float getData(String name){
+	public float getData(String name){
 		return getComonentData(name);
 	}
 	
@@ -111,7 +119,7 @@ public class CustomController {
 	}
 	
 	public boolean isLeftTrigger(){
-		return isButton(rightTrigger);
+		return isButton(leftTrigger);
 	}
 	
 	public float getRightStickX(){
@@ -123,11 +131,11 @@ public class CustomController {
 	}
 	
 	public float getRightTrigger(){
-		return getData("rz");
+		return getData(rightTrigger);
 	}
 	
 	public boolean isRightTrigger(){
-		return isButton("rz");
+		return isButton(rightTrigger);
 	}
 	
 	public int getPOV(){
@@ -200,5 +208,12 @@ public class CustomController {
 				return key;
 			}
 		}
+	}
+	
+	public void rumble(){
+		System.out.println(this.canRumble);
+		if(!this.canRumble)return;
+		Rumbler[] r = this.base.getRumblers();
+		r[0].rumble(1);
 	}
 }
