@@ -16,11 +16,7 @@ import net.java.games.input.ControllerEnvironment;
 import net.java.games.input.ControllerEvent;
 import net.java.games.input.ControllerListener;
 
-<<<<<<< HEAD
 public class Input implements KeyListener, MouseListener, MouseMotionListener, ControllerListener {
-=======
-public class Input implements KeyListener, MouseListener, MouseMotionListener{
->>>>>>> fc4cf36fc2988a8d71be358303cd0809fc6387fc
 
     public static final int KEYS = 0, MOUSE = 1, CONTROLLER = 2;
     private Key photoKey;
