@@ -306,7 +306,12 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener, C
     	}
     	
     	public void tick(){
-    		//this.lastState = this.clicked;
+    		this.lastState = this.clicked;
+    	}
+    	
+    	public void flush(){
+    		this.clicked = false;
+    		this.lastState = false;
     	}
     
     }
@@ -317,10 +322,22 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener, C
      * A function that sets all key Values to false, mainly for house keeping
      */
     public void releaseAllKeys() {
-       for(Key k : this.keys){
-    	  k.toggle(false);
-       }
-       this.lastKeyDown = false;
+    	if(this.addedKeyboard){
+	    	for(Key k : this.keys){
+	    		k.toggle(false);
+	    	}
+	    	this.lastKeyDown = false;
+    	}
+    }
+    
+    /**
+     * A function that "flushes" the input que of the 2 mouse button
+     */
+    public void relaseMouseButtons(){
+    	if(this.addedMouse){
+    		this.leftMouseButton.flush();
+    		this.rightMouseButton.flush();
+    	}
     }
     
     public String getKeyTyped(String msg){
