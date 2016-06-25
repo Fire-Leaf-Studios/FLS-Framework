@@ -34,7 +34,10 @@ public abstract class Screen{
 	}
 	
 	public final void inputTick(){
-		if(this.input != null)this.input.tick();
+		if(this.input != null){
+			this.input.tick();
+			if(!this.game.hasFocus())this.input.releaseAllKeys();
+		}
 	}
 	
 	public void guiUpdate(){
