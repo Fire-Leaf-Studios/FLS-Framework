@@ -85,7 +85,6 @@ public class FileIO {
 		
 		String res = "";
 		InputStream stream = this.getClass().getResourceAsStream(pos);
-		
 		InputStreamReader is = new InputStreamReader(stream);
 		try{
 			BufferedReader reader = new BufferedReader(is);
@@ -99,10 +98,10 @@ public class FileIO {
 		return res;
 	}
 	
-	public boolean doesInternalFileExsist(String pos){
+	private boolean doesInternalFileExsist(String pos){
 		try{
-			File f = new File(this.getClass().getResource(pos).getFile());
-			return f.exists();
+			if(this.getClass().getResourceAsStream(pos) == null)return false;
+			return true;
 		}catch(Exception e){
 			return false;
 		}
