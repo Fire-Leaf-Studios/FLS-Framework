@@ -43,7 +43,7 @@ public class SpriteParser {
 		int[] res = new int[this.w * this.w];
 		int tx = x;
 		int ty = y;
-		if(tx < 0 || ty < 0 || tx >= this.w  || ty >= this.w)return null;
+		if(tx < 0 || ty < 0 || tx >= this.w  || ty >= this.w)return new int[8*8];
 		for(int i = 0; i < this.w * this.w; i++){
 			int dx = i % this.w;
 			int dy = i / this.w;

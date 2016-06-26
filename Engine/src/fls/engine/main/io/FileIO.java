@@ -78,12 +78,14 @@ public class FileIO {
 	 * @return String
 	 */
 	public String readInternalFile(String pos){
+		if(!doesInternalFileExsist(pos)){
+			System.err.println("Unable to open "+pos);
+			return "";
+		}
+		
 		String res = "";
 		InputStream stream = this.getClass().getResourceAsStream(pos);
 		
-		if(stream == null){
-			throw new RuntimeException("Unable to open: "+pos);
-		}
 		InputStreamReader is = new InputStreamReader(stream);
 		try{
 			BufferedReader reader = new BufferedReader(is);
@@ -95,5 +97,14 @@ public class FileIO {
 			e.printStackTrace();
 		}
 		return res;
+	}
+	
+	public boolean doesInternalFileExsist(String pos){
+		try{
+			File f = new File(this.getClass().getResource(pos).getFile());
+			return f.exists();
+		}catch(Exception e){
+			return false;
+		}
 	}
 }
