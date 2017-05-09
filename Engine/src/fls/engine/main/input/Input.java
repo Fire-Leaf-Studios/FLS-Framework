@@ -50,7 +50,6 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener, C
     public Key up,down,left,right;
     public Key space,esc,z,x,c,shift;
     private Init game;
-    private boolean usingImage;
 
     /**
      * The class that handles all of the input in our games
@@ -86,7 +85,7 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener, C
             this.x = new Key(this,KeyEvent.VK_X);
             this.c = new Key(this,KeyEvent.VK_C);
             this.shift = new Key(this,KeyEvent.VK_SHIFT);
-            setScreenshotKey(KeyEvent.VK_P, game.isCustomImage());
+            setScreenshotKey(KeyEvent.VK_P);
             break;
         case MOUSE:
         	this.addedMouse = true;
@@ -234,9 +233,8 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener, C
      * A small function that sets the 'Screen-cap' key
      * @param key
      */
-    public void setScreenshotKey(int key, boolean image) {
+    public void setScreenshotKey(int key) {
         this.photoKey = key;
-        this.usingImage = image;
     }
 
     /**

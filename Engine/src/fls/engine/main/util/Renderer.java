@@ -4,6 +4,8 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.util.Arrays;
 
+import fls.engine.main.Init;
+
 public class Renderer {
 
 	
@@ -16,7 +18,12 @@ public class Renderer {
 	public int scale;
 	protected int xOff, yOff;
 	
-	public Renderer(BufferedImage img){
+	public Renderer(Init i){
+		if(!i.isCustomImage()){
+			throw new IllegalStateException("Not using a custom draw surface!");
+		}
+		
+		BufferedImage img = i.image;
 		this.img = img;
 		this.w = img.getWidth();
 		this.h = img.getHeight();
