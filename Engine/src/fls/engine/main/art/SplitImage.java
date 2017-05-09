@@ -5,6 +5,8 @@ import java.awt.image.BufferedImage;
 
 import javax.imageio.ImageIO;
 
+import fls.engine.main.io.FileIO;
+
 public class SplitImage {
 
     private String loc;
@@ -37,7 +39,7 @@ public class SplitImage {
      */
     public BufferedImage load() {
         try {
-            BufferedImage org = ImageIO.read(Art.class.getResource(loc));
+            BufferedImage org = ImageIO.read(Art.class.getResourceAsStream(loc));
             BufferedImage res = new BufferedImage(org.getWidth(), org.getHeight(), BufferedImage.TYPE_INT_ARGB);
             Graphics g = res.getGraphics();
             g.drawImage(org, 0, 0, null);

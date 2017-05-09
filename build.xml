@@ -1,45 +1,93 @@
-<project>
+<project name="LD37 Build" default="build" basedir=".">
+	
+	<property file="data.properties" prefix="data"/>
+	<property name="adPath" value="Engine/"/>
+		
+	<echo>Checking if 'data.properties' exists</echo>
+	<condition property="dataExists">
+			<available file='data.properties'/>
+	</condition>
+	
+	<echo message="${dataExists}"/>
+	
+	<path id="libs">
+		<fileset dir="${adPath}/lib">
+			<include name="**/*.jar"/>
+		</fileset>
+	</path>
+	
+	<target name="clean">
+		<echo>Cleaning up the build env</echo>
+		<delete dir="build" />
+		<echo>Finished cleaning up the build env</echo>
+		<mkdir dir="build"/>
+		<echo>Created new build env</echo>
+		<antcall target="makeData"/>
+	</target>
+	
+	<target name="checkConfig">
+		<echo>Checking for edited config</echo>
+		<condition property="validConfig">
+			<and>
+				<not>
+					<equals arg1="${data.main}" arg2="packagePath"/>
+				</not>
+				<not>
+					<equals arg1="${data.name}" arg2="OUTPUT"/>
+				</not>
+			</and>
+		</condition>
+	
+		<fail unless="validConfig">
+			You need to edit the 'data' file
+		</fail>
+	</target>
 
-    <property name="adPath" value="Engine/"/>
-    <property name="version" value="0.3.8"/>
-    <property name="src.dir"     value="${adPath}src"/>
-    <property name="lib.dir" value="${adPath}lib"/>
-    <property name="outputFile" value="EJEngine${version}.jar"/>
-
-    <property name="build.dir"   value="build"/>
-    <property name="classes.dir" value="${build.dir}/classes"/>
-    <property name="res.dir" value="${build.dir}/res"/>
-    <property name="jar.dir"     value="${build.dir}/jar"/>
-
-    <property name="main-class"  value="fls.engine.main.Init"/>
-
-    <path id="libs">
-      <fileset dir="${lib.dir}" includes="**/*.jar"/>
-      <fileset dir="${src.dir}/"/>
-    </path>
-
-    <target name="clean">
-        <delete dir="${build.dir}"/>
-    </target>
-
-    <target name="compile">
-        <mkdir dir="${classes.dir}"/>
-        <javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="libs"/>
-        <copy todir="${classes.dir}">
-        <fileset dir="${src.dir}">
-            <include name="*.png"/>
-          </fileset>
-        </copy>
-    </target>
-
-    <target name="jar">
-        <mkdir dir="${jar.dir}"/>
-        <jar destfile="${jar.dir}/${outputFile}" basedir="${classes.dir}">
-            <manifest>
-                <attribute name="Main-Class" value="${main-class}"/>
-            </manifest>
-        </jar>
-    </target>
-
-    <target name="build" depends="compile,jar"/>
+	<target name="compile" depends="clean, checkConfig">
+		<echo>Compiling classes</echo>
+		<mkdir dir="build/classes"/>
+		<javac srcdir="${adPath}src" destdir="build/classes" includeantruntime="false">
+			<classpath>
+				<fileset dir="${adPath}/lib">
+					<include name="**/*.jar"/>
+				</fileset>
+			</classpath>
+		</javac>
+		<echo>Succesfully compliled classes</echo>
+	</target>
+	
+	<target name="build" depends="compile">
+		<antcall target="incBuildNum"/>
+		<echo>Starting the packing process</echo>
+		<mkdir dir="build/jar"/>
+		<jar destfile="build/jar/${data.name}-Build-${data.build}.jar" basedir="build/classes" update="true">
+			<manifest>
+				<attribute name="Main-Class" value="${data.main}"/>
+			</manifest>
+			
+			<fileset dir="${adPath}/res"/><!-- Makes sure to include all of the files in ./res -->
+			
+			<zipgroupfileset dir="${adPath}/lib" includes="**/*.jar"/>
+			
+		</jar>
+		<echo>Finished?!</echo>
+	</target>
+	
+	<target name="incBuildNum" description="Increments the build number">
+		<propertyfile file="data.properties">
+			<entry key="build" default="0" type="int" operation="+"/>
+		</propertyfile>
+	</target>
+	
+	<target name="makeData" unless="dataExists">
+		<echo>Didn't find 'data.properties' so making one</echo>
+		<propertyfile file="data.properties">
+			<entry key="build" default="0" type="int"/>
+			<entry key="name" default="OUTPUT" type="string"/>
+			<entry key="main" default="packagePath" type="string"/>
+		</propertyfile>
+		<fail>
+		 Please enter values into 'data.properties'
+		</fail>
+	</target>
 </project>

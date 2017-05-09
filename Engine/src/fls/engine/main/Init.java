@@ -34,7 +34,7 @@ public class Init extends Canvas implements Runnable {
 	private boolean printFPS = false;
 	private boolean skipInit = false;
 	private int ticks = 0;
-	private int desFrames;
+	private int splashCountDown;
 	private int lastFrames;
 	public int exFrames;
 	public JFrame frame;
@@ -94,10 +94,10 @@ public class Init extends Canvas implements Runnable {
 		
 		// this.setInput(new Input(this, Input.CONTROLLER));
 		setScreen(new NonRenderScreen());
-		setDesFrames(30);
 		this.lastFrames = 0;
 		this.waitingForScreenShot = false;
-		skipInit();
+		this.splashCountDown = 60 * 4;
+		//skipInit();
 	}
 
 	public Init() {
@@ -156,6 +156,11 @@ public class Init extends Canvas implements Runnable {
 			if (started) {
 				screen.inputTick();
 				screen.update();
+			}else{
+				if(this.splashCountDown==0){
+					started = true;
+				}
+				this.splashCountDown--;
 			}
 		} else {
 			screen.inputTick();
@@ -443,10 +448,6 @@ public class Init extends Canvas implements Runnable {
 
 	public Screen getScreen() {
 		return this.screen;
-	}
-
-	public void setDesFrames(int amt) {
-		this.desFrames = amt;
 	}
 
 	public static void main(String[] args) {

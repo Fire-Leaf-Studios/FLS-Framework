@@ -5,7 +5,6 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 
 import fls.engine.main.Init;
-import sun.awt.X11GraphicsDevice;
 
 public class DeviceScreen {
 
