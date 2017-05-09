@@ -275,4 +275,35 @@ public class Renderer {
 		if(x > 255) x = 255;
 		return x;
 	}
+	
+	public int larp(int c1, int c2, float amt){
+		
+		if(amt >= 1)return c2;
+		else if(amt <= 0)return c1;
+		int r1 = (c1 >> 16) & 0xFF;
+		int g1 = (c1 >> 8) & 0xFF;
+		int b1 = (c1) & 0xFF;
+		
+		int r2 = (c2 >> 16) & 0xFF;
+		int g2 = (c2 >> 8) & 0xFF;
+		int b2 = (c2) & 0xFF;
+		
+		int minR = Math.min(r1, r2);
+		int minG = Math.min(g1, g2);
+		int minB = Math.min(b1, b2);
+		
+		int maxR = Math.max(r1, r2);
+		int maxG = Math.max(g1, g2);
+		int maxB = Math.max(b1, b2);
+		
+		int rr = (int)(minR + ((maxR - minR) * amt));
+		int gg = (int)(minG + ((maxG - minG) * amt));
+		int bb = (int)(minB + ((maxB - minB) * amt));
+		
+		rr = clamp(rr);
+		gg = clamp(gg);
+		bb = clamp(bb);
+		
+		return rr << 16 | gg << 8 | bb;
+	}
 }

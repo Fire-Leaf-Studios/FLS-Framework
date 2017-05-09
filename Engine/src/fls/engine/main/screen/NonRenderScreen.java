@@ -2,23 +2,29 @@ package fls.engine.main.screen;
 
 import java.awt.Graphics;
 
-import fls.engine.main.art.ABSColor;
-import fls.engine.main.art.Art;
-import fls.engine.main.input.CustomController;
+import fls.engine.main.util.Font;
+import fls.engine.main.util.Renderer;
 
 public class NonRenderScreen extends Screen{
 	
+	private Renderer r;
+	private int tick;
+	
+	public void postInit(){
+		this.r = new Renderer(this.game);
+		this.tick = 0;
+		Font.newInstance(this.game);
+	}
+	
 	@Override
 	public void update() {
-		
+		this.tick = (this.tick + 1) % 180;
 	}
 
-	@SuppressWarnings("static-access")
 	@Override
 	public void render(Graphics g) {
-		Art.fillScreen(this.game, g, ABSColor.black);
-        String msg = "You need to set a screen before this will work";
-        Art.setTextColor(ABSColor.white);
-        Art.drawString(msg, g, (this.game.width / 2) - (msg.length() * Art.FONTSIZE) / 2, this.game.height * this.game.scale / 2 + 3);
+		this.r.fill(0);
+        String msg = "You need to set a screen before this will work\nCurrent window size: " + this.game.getWidth() + "x" + this.game.getHeight()+"\nCurrent renderer size: " + this.game.image.getWidth() + "x"+this.game.image.getHeight()+"\n\nEnjoy the stats!";
+        Font.instance.drawStringCenterWithColor(r, msg, this.tick>90?0xFF0000:0xFFFFFF);
 	}
 }

@@ -49,6 +49,12 @@ public class Init extends Canvas implements Runnable {
 	private Input input;
 	public boolean fullScreen;
 	public boolean waitingForScreenShot;
+	
+	public Init(String name, int w, int h, boolean f, int iw, int ih){
+		this(name, w, h, f);
+		//useCustomBufferedImage(iw, ih, false);
+		//setScreen(new NonRenderScreen());
+	}
 
 	public Init(String name, int width, int height) {
 		this(name, width, height, false);
@@ -57,7 +63,7 @@ public class Init extends Canvas implements Runnable {
 	public Init(String name, int w, int h, boolean full) {
 		createWindow(name, w, h);
 		setVisible(true);
-		image = createNewImage(w, h, 2);
+		useCustomBufferedImage(w, h, false);
 		this.frame = new JFrame(title);
 		frame.add(this);
 		frame.setDefaultCloseOperation(3);
