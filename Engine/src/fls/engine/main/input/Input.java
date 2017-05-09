@@ -15,16 +15,18 @@ import net.java.games.input.Controller;
 import net.java.games.input.ControllerEnvironment;
 import net.java.games.input.ControllerEvent;
 import net.java.games.input.ControllerListener;
+import net.java.games.input.DirectAndRawInputEnvironmentPlugin;
 
 public class Input implements KeyListener, MouseListener, MouseMotionListener, ControllerListener {
 
     public static final int KEYS = 0, MOUSE = 1, CONTROLLER = 2;
-    private Key photoKey;
+    private int photoKey;
     public List<Key> keys;
     
     private boolean addedMouse = false;
     private boolean addedKeyboard = false;
     private boolean addedControllers = false;
+    private boolean alreadyGotControllers = false;
     private KeyEvent lastKeyPress;
     private boolean lastKeyDown;
     private final int keyDelay = 10;
@@ -33,7 +35,7 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener, C
     
     private HashMap<String,int[]> preDefs;
     private Controller[] conts;
-    private Controller[] conrtollers;
+    private Controller[] controllers;
     private CustomController primaryController;
 
     public MouseButton leftMouseButton = new MouseButton();
@@ -48,6 +50,7 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener, C
     public Key up,down,left,right;
     public Key space,esc,z,x,c,shift;
     private Init game;
+    private boolean usingImage;
 
     /**
      * The class that handles all of the input in our games
@@ -83,7 +86,7 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener, C
             this.x = new Key(this,KeyEvent.VK_X);
             this.c = new Key(this,KeyEvent.VK_C);
             this.shift = new Key(this,KeyEvent.VK_SHIFT);
-            setScreenshotKey(KeyEvent.VK_P);
+            setScreenshotKey(KeyEvent.VK_P, game.isCustomImage());
             break;
         case MOUSE:
         	this.addedMouse = true;
@@ -94,10 +97,6 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener, C
         case CONTROLLER:
         	this.addedControllers = true;
             System.out.println("Added Controller input");
-            
-            this.ce = ControllerEnvironment.getDefaultEnvironment(); 
-            this.ce.addControllerListener(this);
-            this.conts = this.ce.getControllers();
             this.scanForControllers(true);
             break;
         default:
@@ -114,7 +113,7 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener, C
     public void setPrimaryController(String key){
     	if(!this.addedControllers || this.primaryController != null)return;
     	this.scanForControllers(false);
-    	for(Controller c : this.conrtollers){
+    	for(Controller c : this.controllers){
     		c.poll();
     		Component[] comps = c.getComponents();
     		System.out.println("---------");
@@ -140,9 +139,38 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener, C
     	}
     }
     
+    public void listControllers(){
+    	if(!this.addedControllers)return;
+		System.out.println("---------");
+    	for(Controller c : this.controllers){
+    		System.out.println(c.getName() + " : " + c.getPortNumber());
+    	}
+    	System.out.println("");
+    }
+    
+    public void setPrimaryControllerByName(String name, boolean xbox){
+    	if(!this.addedControllers || this.primaryController != null)return;
+    	this.scanForControllers(false);
+    	for(Controller c : this.controllers){
+    		if(c.getName().equals(name)){
+    			this.primaryController = new CustomController(c, xbox);
+    			return;
+    		}
+    	}
+    }
+    
     public void scanForControllers(boolean names){
-    	this.ce = ControllerEnvironment.getDefaultEnvironment();
-    	this.conts = this.ce.getControllers();
+    	if(!this.addedControllers || this.alreadyGotControllers)return;
+    	
+    	DirectAndRawInputEnvironmentPlugin directEnv = new DirectAndRawInputEnvironmentPlugin();
+    	if(this.ce.isSupported()){
+    		System.out.println("Using DIRECT env!");
+    		this.conts = directEnv.getControllers();
+    	}else{
+    		this.ce = ControllerEnvironment.getDefaultEnvironment();
+            this.conts = this.ce.getControllers();
+    	}
+        this.ce.addControllerListener(this);
     	
     	int num = 0;
         for(Controller c : conts){
@@ -152,18 +180,25 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener, C
         	}
         }
         
-        this.conrtollers = new Controller[num];
+        this.controllers = new Controller[num];
         
         num = 0;
         for(Controller c : conts){
         	if(c.getType() == Controller.Type.GAMEPAD || c.getType() == Controller.Type.STICK){
-        		this.conrtollers[num] = c;
+        		this.controllers[num] = c;
         		num++;
         	}
         }
     }
     
     public void showData(Controller c){
+    	if(!c.poll()){
+        	System.out.println("--------------");
+        	System.out.println(c.getName() + " -  DISCONNECTED");
+        	System.out.println("--------------");
+        	return;
+    	}
+    	
     	Component[] comps = c.getComponents();
     	System.out.println("--------------");
     	System.out.println(c.getName());
@@ -199,15 +234,16 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener, C
      * A small function that sets the 'Screen-cap' key
      * @param key
      */
-    public void setScreenshotKey(int key) {
-        this.photoKey = new Key(this,key);
+    public void setScreenshotKey(int key, boolean image) {
+        this.photoKey = key;
+        this.usingImage = image;
     }
 
     /**
      * A function that returns the 'Screen-cap' key
      * @return int - The int set in {@link #setScreenshotKey(int)}
      */
-    public Key getScreenshotKey() {
+    public int getScreenshotKey() {
         return this.photoKey;
     }
     
@@ -432,6 +468,10 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener, C
 
 	@Override
 	public void keyPressed(KeyEvent e) {
+		if(e.getKeyCode() == this.photoKey && !this.game.waitingForScreenShot){
+			this.game.waitingForScreenShot = true;
+			return;
+		}
 		if(e.getKeyCode() == KeyEvent.VK_SHIFT)shifting = true;
 		toggle(e.getKeyCode(),true);
 		lastKeyPress = e;
@@ -484,5 +524,11 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener, C
 	@Override
 	public void controllerRemoved(ControllerEvent e) {
 		System.out.println(e.getController().getName());
+	}
+	
+	public Controller[] getAllControllers(){
+		if(!this.addedControllers)return null;
+		scanForControllers(false);
+		return this.controllers;
 	}
 }

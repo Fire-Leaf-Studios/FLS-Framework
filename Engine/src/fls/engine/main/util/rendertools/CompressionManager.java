@@ -13,9 +13,9 @@ public class CompressionManager {
 		return res;
 	}
 	
-	public static int[] superDecompress(String s){
+	public static int[] superDecompress(int size, String s){
 		if(s.startsWith("#")){
-			int[] d = new int[8 * 8];
+			int[] d = new int[size * size];
 			Arrays.fill(d, -1);// Make sure it's all transparent at the start
 			s = s.substring(1);
 			String[] secs = s.split(",");

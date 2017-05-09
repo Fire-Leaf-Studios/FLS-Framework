@@ -10,9 +10,9 @@ public class CustomController {
 	
 	private final boolean xbox;
 	
-	public static final String start = "7";
+	public static final String start = "Start";
 	public static final String select = "6";
-	public static final String a = "0";
+	public static final String a = "A";
 	public static final String b = "1";
 	public static final String x = "2";
 	public static final String y = "3";
@@ -38,28 +38,50 @@ public class CustomController {
 	public static final int povNW = 7;
 	
 	private final boolean canRumble;
+	private boolean connected;
+	private int rumbleTimer;
+	private Component[] comps;
 	
 	public CustomController(Controller c, boolean x){
 		this.base = c;
 		this.xbox = x;
 		if(c.getRumblers().length > 0)canRumble = true;
 		else canRumble = false;
-		
-		rumble();
+		this.rumbleTimer = 0;
+		this.connected = false;
+		this.comps = this.base.getComponents();
+		rumble(0.5f, 1f);
 	}
 	
 	private float getComonentData(String s){
-		this.base.poll();
-		Component[] comps = this.base.getComponents();
-		for(Component com : comps){
-			if(com.getIdentifier().getName().equals(getConrtollerCorrectButton(s,this.xbox)))return com.getPollData();
+		this.connected = this.base.poll(); 
+		for(Component com : this.comps){
+			if(com.getIdentifier().getName().equals(getConrtollerCorrectButton(s, this.xbox)))return com.getPollData();
 		}
 		return -1f;
+	}
+	
+	public float getRawComonentData(String s){
+		this.connected = this.base.poll();
+		for(Component com : this.comps){
+			if(com.getIdentifier().getName().equals(getConrtollerCorrectButton(s ,this.xbox)))return com.getPollData();
+		}
+		return -1;
 	}
 	
 	private boolean isButton(String btn){
 		float d = getComonentData(btn);
 		return d==1.0f?true:false;
+	}
+	
+	private float getDeadZone(String id){
+		Component[] comps = this.base.getComponents();
+		for(Component com : comps){
+			if(com.getIdentifier().getName().equals(getConrtollerCorrectButton(id,this.xbox))){
+				return com.getDeadZone();
+			}
+		}
+		return -1;
 	}
 	
 	public float getData(String name){
@@ -107,11 +129,15 @@ public class CustomController {
 	}
 	
 	public float getLeftStickX(){
-		return getData(leftStickX);
+		float d = getDeadZone(leftStickX);
+		float res = getData(leftStickX);
+		return res > d ? res : res < -d ? res : 0;
 	}
 	
 	public float getLeftStickY(){
-		return getData(leftStickY);
+		float d = getDeadZone(leftStickY);
+		float res = getData(leftStickY);
+		return res > d ? res : res < -d ? res : 0;
 	}
 	
 	public float getLeftTrigger(){
@@ -159,17 +185,25 @@ public class CustomController {
 	public void listComponents(){
 		this.base.poll();
 		for(Component c : this.base.getComponents()){
-			System.out.println(c.getName() + ": "+c.getPollData());
+			System.out.println(c.getIdentifier().getName() + ": "+c.getPollData());
 		}
 	}
 	
-	public String getCoponentReadout(){
+	public String getComponentReadout(){
 		String res = "";
 		this.base.poll();
 		for(Component c : this.base.getComponents()){
 			res += c.getIdentifier().getName() + ": "+c.getPollData() + "\n";
 		}
 		return res;
+	}
+	
+	public void update(){
+		if(this.rumbleTimer > 0)this.rumbleTimer--;
+		else if(this.rumbleTimer == 0){
+			this.stopRumble();
+			this.rumbleTimer = -1;
+		}
 	}
 	
 	public static String getConrtollerCorrectButton(String key, boolean xb){
@@ -210,10 +244,20 @@ public class CustomController {
 		}
 	}
 	
-	public void rumble(){
-		System.out.println(this.canRumble);
+	public void rumble(float strength, float length){
 		if(!this.canRumble)return;
 		Rumbler[] r = this.base.getRumblers();
-		r[0].rumble(1);
+		r[0].rumble(strength);
+		this.rumbleTimer = (int)(60 * length);
+	}
+	
+	private void stopRumble(){
+		if(!this.canRumble)return;
+		Rumbler[] r = this.base.getRumblers();
+		r[0].rumble(0f);
+	}
+	
+	public boolean connected(){
+		return this.connected;
 	}
 }

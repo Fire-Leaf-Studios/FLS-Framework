@@ -7,10 +7,18 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.rmi.UnknownHostException;
 
 public class HTTP {
 
+	private static boolean active = true;
+	
+	public static void setActive(boolean v){
+		HTTP.active = v;
+	}
+	
 	public static String get(String path) {
+		if(!HTTP.active)return "";
 		String url = path;
 
 		URL obj = null;
@@ -22,8 +30,11 @@ public class HTTP {
 		HttpURLConnection con = null;
 		try {
 			con = (HttpURLConnection) obj.openConnection();
-		} catch (IOException e) {
+			con.setReadTimeout(10000);
+			con.setConnectTimeout(10000);
+		} catch (Exception e) {
 			e.printStackTrace();
+			return "";
 		}
 
 		// optional default is GET
@@ -36,11 +47,15 @@ public class HTTP {
 		int responseCode = 0;
 		try {
 			responseCode = con.getResponseCode();
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			//e.printStackTrace();
+			return "";
 		}
-		System.out.println("\nSending 'GET' request to URL : " + url);
-		System.out.println("Response Code : " + responseCode);
+		
+		if(responseCode == 404)return "404 No page!";
+		if(responseCode == 408)return "408 No time!";
+		//System.out.println("\nSending 'GET' request to URL : " + url);
+		//System.out.println("Response Code : " + responseCode);
 
 		BufferedReader in = null;
 		try {
@@ -67,6 +82,7 @@ public class HTTP {
 	}
 	
 	public static String post(String path){
+		if(!HTTP.active)return "";
 		String url = path;
 		URL ur = null;
 		

@@ -8,8 +8,23 @@ public class SpriteParser {
 	private int w;
 	
 	public SpriteParser(int s, String data){
+		this(data);
 		this.w = s;
+	}
+	
+	public SpriteParser(String data){
 		String[] lines = data.split("\n");
+		int s = 8;
+		for(String l : lines){
+			if(!l.startsWith("?"))continue;
+			l = l.substring(1);
+			String key = l.substring(0, l.indexOf(":")).trim();
+			String value = l.substring(l.indexOf(":")+1).trim();
+			if(key.equals("Size")){
+				s = Integer.parseInt(value);
+			}
+		}
+		
 		int compressionType = -1;
 		for(String line : lines){
 			if(line.startsWith("?") && compressionType == -1) {
@@ -19,7 +34,10 @@ public class SpriteParser {
 				}
 			}
 		}
-		this.data = new int[(s * s) * (s * s)][];
+		
+		int ts = 64 / s;
+		int numCells = (ts * ts);
+		this.data = new int[numCells][];
 		int dataPos = 0;
 		for(int i = 0; i < lines.length; i++){
 			String l = lines[i];
@@ -33,22 +51,42 @@ public class SpriteParser {
 				}
 				this.data[dataPos] = d;
 			}else{
-				this.data[dataPos] = CompressionManager.superDecompress(lines[i]);
+				this.data[dataPos] = CompressionManager.superDecompress(s, lines[i]);
 			}
 			dataPos ++;
 		}
+		
+		this.w = s;
 	}
 	
 	public int[] getData(int x, int y){
 		int[] res = new int[this.w * this.w];
 		int tx = x;
 		int ty = y;
-		if(tx < 0 || ty < 0 || tx >= this.w  || ty >= this.w)return new int[8*8];
+		if(tx < 0 || ty < 0 || tx >= this.w  || ty >= this.w)return res;
 		for(int i = 0; i < this.w * this.w; i++){
 			int dx = i % this.w;
 			int dy = i / this.w;
-			res[dx + dy * this.w] = this.data[tx + ty * this.w][i];
+			res[dx + dy * this.w] = this.data[tx + ty * getNumCells()][i];
 		}
 		return res;
+	}
+	
+	public int[] getData(int i){
+		int tx = i % this.getNumCells();
+		int ty = i / this.getNumCells();
+		return getData(tx, ty);
+	}
+	
+	public int getNumCells(){
+		return 64 / this.w;
+	}
+	
+	public int getTotalNumCells(){
+		return getNumCells() * getNumCells();
+	}
+	
+	public int getCellWidth(){
+		return this.w;
 	}
 }
