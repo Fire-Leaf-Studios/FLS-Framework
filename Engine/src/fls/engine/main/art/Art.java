@@ -15,6 +15,7 @@ import javax.swing.JOptionPane;
 
 import fls.engine.main.Init;
 import fls.engine.main.art.font.Font;
+import fls.engine.main.io.FileIO;
 
 public class Art {
 
@@ -127,7 +128,7 @@ public class Art {
     public static void saveScreenShot(Init init, boolean image) {
         int atmpt = 1;
         try {
-            File dir = new File(init.title + " Screenshots");
+            File dir = new File(FileIO.path + "/" + init.title + " Screenshots");
             if (!dir.exists()) dir.mkdir();
             File file = new File(dir.getPath() + "/" + init.title + " screenshot.png");
             while (file.exists()) {

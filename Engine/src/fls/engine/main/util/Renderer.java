@@ -4,19 +4,26 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.util.Arrays;
 
+import fls.engine.main.Init;
+
 public class Renderer {
 
 	
 	private BufferedImage img;
 	
-	private int[] pixles;
+	protected int[] pixles;
 	private boolean[] dirty;
-	private int w,h;
+	protected int w,h;
 	
 	public int scale;
-	private int xOff, yOff;
+	protected int xOff, yOff;
 	
-	public Renderer(BufferedImage img){
+	public Renderer(Init i){
+		if(!i.isCustomImage()){
+			throw new IllegalStateException("Not using a custom draw surface!");
+		}
+		
+		BufferedImage img = i.image;
 		this.img = img;
 		this.w = img.getWidth();
 		this.h = img.getHeight();
@@ -94,6 +101,13 @@ public class Renderer {
 		if(g < 0)g = 0;
 		if(b < 0)b = 0;
 		return makeRGB(r,g,b);
+	}
+	
+	public int getShadedColor(int col, float amt){
+		int r = (col >> 16) & 0xFF;
+		int g = (col >> 8) & 0xFF;
+		int b = (col) & 0xFF;
+		return getShadedColor(r, g, b, amt);
 	}
 	
 	private boolean isValid(int x, int y){
@@ -202,8 +216,6 @@ public class Renderer {
 		if(c == -1)c = makeRGB(255,0,0);
 		for(int xx = -r; xx < r; xx++){
 			for(int yy = -r; yy < r; yy++){
-				
-				
 				int x2 = xx * xx;
 				int y2 = yy * yy;			
 				if(x2 + y2 < r * r){
@@ -211,6 +223,40 @@ public class Renderer {
 				}
 			}
 		}
+	}
+	
+	public void drawLine(int x0, int y0, int x1, int y1, int c){
+		 int w = x1 - x0;
+		    int h = y1 - y0;
+		    int dx1 = 0, dy1 = 0, dx2 = 0, dy2 = 0 ;
+		    if (w<0) dx1 = -1 ; else if (w>0) dx1 = 1 ;
+		    if (h<0) dy1 = -1 ; else if (h>0) dy1 = 1 ;
+		    if (w<0) dx2 = -1 ; else if (w>0) dx2 = 1 ;
+		    int longest = Math.abs(w) ;
+		    int shortest = Math.abs(h) ;
+		    if (!(longest>shortest)) {
+		        longest = Math.abs(h) ;
+		        shortest = Math.abs(w) ;
+		        if (h<0) dy2 = -1 ; else if (h>0) dy2 = 1 ;
+		        dx2 = 0 ;            
+		    }
+		    int numerator = longest >> 1 ;
+		    for (int i=0;i<=longest;i++) {
+		        setPixel(x0,y0,c) ;
+		        numerator += shortest ;
+		        if (!(numerator<longest)) {
+		            numerator -= longest ;
+		            x0 += dx1 ;
+		            y0 += dy1 ;
+		        } else {
+		            x0 += dx2 ;
+		            y0 += dy2 ;
+		        }
+		    }
+	}
+	
+	public void drawLine(float x0, float y0, float x1, float y1, int c){
+		this.drawLine((int)x0, (int)y0, (int)x1, (int)y1, c);
 	}
 	
 	public int getColor(int x,int y){

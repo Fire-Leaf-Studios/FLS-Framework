@@ -27,4 +27,9 @@ public class Camera {
 	public void center(int cx,int cy){
 		this.center(cx, cy,0);
 	}
+	
+	public void centerRegardless(int cx, int cy, int off){
+		this.pos.x = cx - (this.w / 2) + off;
+		this.pos.y = cy - (this.h / 2) + off;
+	}
 }

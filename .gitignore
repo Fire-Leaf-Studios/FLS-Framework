@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 *target*
 *.jar
 *.war
@@ -25,3 +26,8 @@ local.properties
 
 # Locally stored "Eclipse launch configurations"
 *.launch
+=======
+**/build
+build.xml~
+.classpath
+>>>>>>> dev

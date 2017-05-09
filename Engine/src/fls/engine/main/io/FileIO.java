@@ -3,13 +3,14 @@ package fls.engine.main.io;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.jar.JarFile;
 
 public class FileIO {
 
@@ -31,6 +32,16 @@ public class FileIO {
 		}
 	}
 	
+	public boolean createFile(String path){
+		File f = new File(path);
+		if(f.exists())return false;
+		else{
+			String folderPath = path.substring(0,path.lastIndexOf("/"));
+			new File(folderPath).mkdirs();
+			return true;
+		}
+	}
+	
 	public void appendFile(String pos, String... acont){
 		if(!doesFileExist(pos)){
 			writeFile(pos,"Nothing was here so I made this for you");
@@ -41,6 +52,39 @@ public class FileIO {
 			}
 			
 			writeFile(pos,prev);
+		}
+	}
+	
+	public boolean deleteDir(String path){
+		File f = new File(path);
+		boolean res = f.delete();
+		if(res){
+			System.out.println("Deleted: " + path);
+			return true;
+		}else{
+			System.out.println("Unable to delete: " + path);
+			System.out.println("Checking for files in folders");
+			String[] files = listFiles(path);
+			if(files.length == 0){
+				System.out.println("No files, just unable to delete");
+			}else{
+				System.out.println("Found some files, going to remove them");
+				for(String s : files){
+					String fpath = path+"/"+s;
+					File tf = new File(fpath);
+					tf.delete();
+				}
+			}
+			
+			res = f.delete();
+			
+			if(res){
+				System.out.println("Finally deleted the path");
+				return true;
+			}else{
+				System.out.println("Still unable to delete this path, check it out");
+			}
+			return false;
 		}
 	}
 	
@@ -61,14 +105,13 @@ public class FileIO {
 		}
 	}
 	
-	protected boolean doesFileExist(String pos){
+	public boolean doesFileExist(String pos){
 		return new File(pos).exists();
 	}
 	
-	protected String createDir(String sdir){
+	public String createDir(String sdir){
 		File dir = new File(sdir);
-		if(!dir.exists())dir.mkdir();
-		
+		if(!dir.exists())dir.mkdirs();
 		return sdir;
 	}
 	
@@ -78,12 +121,13 @@ public class FileIO {
 	 * @return String
 	 */
 	public String readInternalFile(String pos){
+		if(!doesInternalFileExsist(pos)){
+			System.err.println("Unable to open "+pos);
+			return "";
+		}
+		
 		String res = "";
 		InputStream stream = this.getClass().getResourceAsStream(pos);
-		
-		if(stream == null){
-			throw new RuntimeException("Unable to open: "+pos);
-		}
 		InputStreamReader is = new InputStreamReader(stream);
 		try{
 			BufferedReader reader = new BufferedReader(is);
@@ -95,5 +139,37 @@ public class FileIO {
 			e.printStackTrace();
 		}
 		return res;
+	}
+	
+	private boolean doesInternalFileExsist(String pos){
+		try{
+			if(this.getClass().getResourceAsStream(pos) == null)return false;
+			return true;
+		}catch(Exception e){
+			return false;
+		}
+	}
+	
+	public String[] listFiles(String dir){
+		File dirFolder = new File(dir);
+		if(!dirFolder.exists())return null;
+		if(dirFolder.isDirectory()){
+			File[] files = dirFolder.listFiles();
+			List<String> names = new ArrayList<String>();
+			for(File f : files){
+				if(f.isDirectory())continue;
+				else {
+					names.add(f.getName());
+				}
+			}
+			String[] res = new String[names.size()];
+			for(int i = 0; i < names.size(); i++){
+				res[i] = names.get(i);
+			}
+			return res;
+		}else{
+			System.err.println(dir + " is not a directory or it does not exist");
+			return null;
+		}
 	}
 }
