@@ -3,6 +3,7 @@ package fls.engine.main;
 import java.awt.Canvas;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Point;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.image.BufferStrategy;
@@ -52,8 +53,7 @@ public class Init extends Canvas implements Runnable {
 	
 	public Init(String name, int w, int h, boolean f, int iw, int ih){
 		this(name, w, h, f);
-		//useCustomBufferedImage(iw, ih, false);
-		//setScreen(new NonRenderScreen());
+		useCustomBufferedImage(iw, ih, false);
 	}
 
 	public Init(String name, int width, int height) {
@@ -99,7 +99,6 @@ public class Init extends Canvas implements Runnable {
 		frame.setLocationRelativeTo(null);
 		
 		// this.setInput(new Input(this, Input.CONTROLLER));
-		setScreen(new NonRenderScreen());
 		this.lastFrames = 0;
 		this.waitingForScreenShot = false;
 		this.splashCountDown = 60 * 4;
@@ -116,6 +115,10 @@ public class Init extends Canvas implements Runnable {
 
 	public void run() {
 		requestFocus();
+		
+		if(this.screen == null){
+			setScreen(new NonRenderScreen());
+		}
 
 		long lastTime = System.nanoTime();
 		double unprocessed = 0;
@@ -454,6 +457,10 @@ public class Init extends Canvas implements Runnable {
 
 	public Screen getScreen() {
 		return this.screen;
+	}
+	
+	public void hiderCursor(){
+		this.setCursor(this.getToolkit().createCustomCursor(new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB), new Point(0,0), ""));
 	}
 
 	public static void main(String[] args) {

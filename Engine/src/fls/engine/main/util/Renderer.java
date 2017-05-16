@@ -97,9 +97,10 @@ public class Renderer {
 		g *= amt;
 		b *= amt;
 		
-		if(r < 0)r = 0;
-		if(g < 0)g = 0;
-		if(b < 0)b = 0;
+		r = clamp(r);
+		g = clamp(g);
+		b = clamp(b);
+		
 		return makeRGB(r,g,b);
 	}
 	
@@ -277,6 +278,14 @@ public class Renderer {
 	}
 	
 	public int larp(int c1, int c2, float amt){
+		
+		amt = Math.max(0f, Math.min(1f, amt));
+		
+		if(c1 > c2){
+			int c3 = c2;
+			c2 = c1;
+			c1 = c3;
+		}
 		
 		if(amt >= 1)return c2;
 		else if(amt <= 0)return c1;
