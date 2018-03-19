@@ -74,7 +74,7 @@ public class Art {
     }
     
     private static void addColoredFont(ABSColor c){
-    	BufferedImage[][] bi = new SplitImage(FONT).changeImageColor(ABSColor.white, c).split(FONTSIZE,FONTSIZE);
+    	BufferedImage[][] bi = new SplitImage(FONT).changeImageColor(ABSColor.white, c).split(FONTSIZE);
     	coloredFonts.put(c, bi);
     }
     

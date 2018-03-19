@@ -6,14 +6,16 @@ import fls.engine.main.Init;
 import fls.engine.main.input.Input;
 import fls.engine.main.screen.gui.GUIManager;
 import fls.engine.main.screen.gui.listener.GUIEvent;
+import fls.engine.main.util.Renderer;
 
 public abstract class Screen{
 
 	public Init game;
 	public Input input;
 	public GUIManager manager;
+	protected Renderer r;
 	
-	/** Called when the screen is about to be set in the  class
+	/** Called when the screen is loaded
 	 * 
 	 * @param game
 	 * @param in
@@ -23,6 +25,7 @@ public abstract class Screen{
 		this.manager.parent = this;
 		this.game = game;
 		this.input = in;
+		this.r = new Renderer(this);
 	}
 	
 	public abstract void update();
@@ -35,8 +38,8 @@ public abstract class Screen{
 	
 	public final void inputTick(){
 		if(this.input != null){
-			this.input.tick();
 			if(!this.game.hasFocus())this.input.releaseAllKeys();
+			else this.input.tick();
 		}
 	}
 	

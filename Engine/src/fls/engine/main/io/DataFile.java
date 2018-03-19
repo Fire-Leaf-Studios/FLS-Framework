@@ -10,22 +10,24 @@ public class DataFile extends FileIO {
 	private boolean canSave;
 	private String name;
 	private String dir;
+	private boolean valid;
 
-	public DataFile(String pos) {
-		this(pos, true);
+	public DataFile(String fileName) {
+		this(fileName, true);
 	}
 
-	public DataFile(String pos, boolean usual) {
+	public DataFile(String fileName, boolean usual) {
 		if (usual) {
-			this.pos = path + "/data/" + pos + ".dat";
+			this.pos = path + "/data/" + fileName + ".dat";
 		} else {
-			this.pos = path + "/" + pos + ".dat";
+			this.pos = path + "/" + fileName + ".dat";
 		}
 		this.ats = new HashMap<String, AttributeValue>();
 		this.canSave = true;
 		this.name = this.pos.substring(this.pos.lastIndexOf("/")+1, this.pos.lastIndexOf("."));
 		this.dir = this.pos.substring(0, this.pos.lastIndexOf("/"));
 		this.fillAts();
+		this.checkValid();
 	}
 	
 	public DataFile(String file, String dir){
@@ -35,11 +37,13 @@ public class DataFile extends FileIO {
 		this.name = file;
 		this.dir = this.pos.substring(0, this.pos.lastIndexOf("/"));
 		this.fillAts();
+		this.checkValid();
 	}
 	
 	public DataFile(String[] data){
 		this.ats = new HashMap<String, AttributeValue>();
 		this.fillAts(data);
+		this.checkValid();
 	}
 
 	private void fillAts() {
@@ -141,5 +145,27 @@ public class DataFile extends FileIO {
 			return this.getData("lastUsed").getString();
 		}	
 		return "-1/-1/-1";
+	}
+	
+	private void checkValid(){
+		if(getData("CHK") != null){//Has been saved/loaded before
+			if(getCheck().equals(getData("CHK").getString()))this.valid = true;
+		}else{//First time loading
+			if(this.ats.size() <= 1){//Contains nothing so it's valid
+				this.valid = true;
+			}else{// No CHK and more than just the date, is either old or invalid accept as OLD
+				this.valid = true;
+			}
+		}
+	}
+	
+	private String getCheck(){
+		String[] s = new String[this.ats.size()];
+		this.ats.keySet().toArray(s);
+		String out = "";
+		for(int i = 0; i < s.length; i++){
+			out = s[i].substring(0, 1).toUpperCase() + this.ats.get(s[i]).getString().substring(0,1);
+		}
+		return out;
 	}
 }

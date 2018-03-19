@@ -5,18 +5,17 @@ import java.awt.image.BufferedImage;
 
 import javax.imageio.ImageIO;
 
-import fls.engine.main.io.FileIO;
-
 public class SplitImage {
 
     private String loc;
     private int xs, ys;
     private BufferedImage pre_image;
     private BufferedImage[][] images;
+    private int defaultImageType;
 
     public SplitImage(String loc) {
         this.loc = loc;
-        pre_image=load();
+        this.pre_image=load();
     }
     
     public SplitImage(BufferedImage i){
@@ -41,8 +40,9 @@ public class SplitImage {
         try {
             BufferedImage org = ImageIO.read(Art.class.getResourceAsStream(loc));
             BufferedImage res = new BufferedImage(org.getWidth(), org.getHeight(), BufferedImage.TYPE_INT_ARGB);
+            this.defaultImageType = org.getType();
             Graphics g = res.getGraphics();
-            g.drawImage(org, 0, 0, null);
+            g.drawImage(res, 0, 0, null);
             g.dispose();
             return res;
         } catch (Exception e) {
@@ -58,13 +58,17 @@ public class SplitImage {
         BufferedImage[][] res = new BufferedImage[xSlide][ySlide];
         for (int x = 0; x < xSlide; x++) {
             for (int y = 0; y < ySlide; y++) {
-                res[x][y] = new BufferedImage(xs, ys, BufferedImage.TYPE_INT_ARGB);
+                res[x][y] = new BufferedImage(xs, ys, this.defaultImageType);
                 Graphics g = res[x][y].getGraphics();
                 g.drawImage(src, -xs * x, -ys * y, null);
                 g.dispose();
             }
         }
         return res;
+    }
+    
+    public BufferedImage[][] split(int xs) {
+    	return split(xs, xs);
     }
 
     public BufferedImage[][] altsplit(int xs,int ys) {
@@ -74,7 +78,7 @@ public class SplitImage {
         BufferedImage[][] res = new BufferedImage[xSlide][ySlide];
         for (int x = 0; x < xSlide; x++) {
             for (int y = 0; y < ySlide; y++) {
-                res[x][y] = new BufferedImage(xs, ys, BufferedImage.TYPE_INT_ARGB);
+                res[x][y] = new BufferedImage(xs, ys, this.defaultImageType);
                 Graphics g = res[x][y].getGraphics();
                 g.drawImage(src, xs, 0, 0, ys, x * xs, y * ys, (x + 1) * xs, (y + 1) * ys, null);
                 g.dispose();

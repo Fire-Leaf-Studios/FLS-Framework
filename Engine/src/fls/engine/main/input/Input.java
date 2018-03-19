@@ -32,6 +32,7 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener, C
     private final int keyDelay = 10;
     private int currentKeyDelay = 0;
     private boolean shifting = false;
+    private boolean ctrl = false;
     
     private HashMap<String,int[]> preDefs;
     private Controller[] conts;
@@ -220,12 +221,12 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener, C
     		for(Key k : this.keys){
     			k.tick();
     		}
-    		if(currentKeyDelay > 0)currentKeyDelay--;
+    		if(this.currentKeyDelay > 0)this.currentKeyDelay--;
     	}
     	
     	if(this.addedMouse){
-    		leftMouseButton.tick();
-    		rightMouseButton.tick();
+    		this.leftMouseButton.tick();
+    		this.rightMouseButton.tick();
     	}
     }
 
@@ -296,7 +297,7 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener, C
          * @return dx
          */
         public int getDX() {
-            return getX() + dx;
+            return this.dx - this.x;
         }
 
         /**
@@ -305,7 +306,7 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener, C
          * @return dy
          */
         public int getDY() {
-            return getY() + dy;
+            return this.dy - this.y;
         }
 
         /**
@@ -336,7 +337,7 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener, C
     	}
     	
     	public boolean justClicked(){
-    		return this.clicked;// && !this.lastState;
+    		return this.clicked ;//&& !this.lastState;
     	}
     	
     	public void tick(){
@@ -434,6 +435,12 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener, C
     public void mouseExited(MouseEvent arg0) {
 
     }
+    
+    public void toggleMouse(int mouseButton, boolean isClicked) {
+    	if(!this.addedMouse)return;
+        if (mouseButton == MouseEvent.BUTTON1) leftMouseButton.toggle(isClicked);
+        if (mouseButton == MouseEvent.BUTTON3) rightMouseButton.toggle(isClicked);
+    }
 
     public void mousePressed(MouseEvent e) {
         mouse.dx = e.getPoint().x - mouse.x;
@@ -446,16 +453,10 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener, C
         mouse.beingDraged = false;
     }
 
-    public void toggleMouse(int mouseButton, boolean isClicked) {
-    	if(!this.addedMouse)return;
-        if (mouseButton == MouseEvent.BUTTON1) leftMouseButton.toggle(isClicked);
-        if (mouseButton == MouseEvent.BUTTON3) rightMouseButton.toggle(isClicked);
-    }
-
     public void mouseDragged(MouseEvent e) {
         mouse.beingDraged = true;
-        mouse.x = e.getX();
-        mouse.y = e.getY();
+        mouse.dx = e.getX();
+        mouse.dy = e.getY();
     }
 
     public void mouseMoved(MouseEvent e) {
@@ -471,6 +472,7 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener, C
 			return;
 		}
 		if(e.getKeyCode() == KeyEvent.VK_SHIFT)shifting = true;
+		if((e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0)ctrl = true;
 		toggle(e.getKeyCode(),true);
 		lastKeyPress = e;
 		lastKeyDown = true;
@@ -480,7 +482,17 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener, C
 	@Override
 	public void keyReleased(KeyEvent e) {
 		toggle(e.getKeyCode(),false);
+		if(e.getKeyCode() == KeyEvent.VK_SHIFT)shifting = false;
+		if((e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0)ctrl = false;
 		lastKeyDown = false;
+	}
+	
+	public boolean isShifting() {
+		return this.shifting;
+	}
+	
+	public boolean isControl() {
+		return this.ctrl;
 	}
 	
 	
@@ -489,23 +501,6 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener, C
 			Key k = this.keys.get(i);
 			if(k.key == ke)k.toggle(p);
 		}
-		/**if(ke == this.w.key)this.w.toggle(p);
-		if(ke == this.s.key)this.s.toggle(p);
-		if(ke == this.a.key)this.a.toggle(p);
-		if(ke == this.d.key)this.d.toggle(p);
-		
-		if(ke == this.up.key)this.up.toggle(p);
-		if(ke == this.down.key)this.down.toggle(p);
-		if(ke == this.left.key)this.left.toggle(p);
-		if(ke == this.right.key)this.right.toggle(p);
-		
-		if(ke == this.space.key)this.space.toggle(p);
-		if(ke == this.esc.key)this.esc.toggle(p);
-		if(ke == this.z.key)this.z.toggle(p);
-		if(ke == this.x.key)this.x.toggle(p);
-		if(ke == this.c.key)this.c.toggle(p);
-		if(ke == this.photoKey.key)this.photoKey.toggle(p);
-		if(ke == this.shift.key)this.shift.toggle(p);**/
 	}
 	
 	public void addKey(Key k){
@@ -528,5 +523,10 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener, C
 		if(!this.addedControllers)return null;
 		scanForControllers(false);
 		return this.controllers;
+	}
+	
+	public void releaseAllInput() {
+		this.releaseAllKeys();
+		this.relaseMouseButtons();
 	}
 }

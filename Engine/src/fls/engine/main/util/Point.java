@@ -1,6 +1,6 @@
 package fls.engine.main.util;
 
-public class Point {
+public class Point{
 
 	public float x,y;
 	
@@ -29,5 +29,9 @@ public class Point {
 	public void setPos(float x, float y){
 		this.x = x;
 		this.y = y;
+	}
+	
+	public String toString() {
+		return "X: " + this.x + ", Y: " + this.y;
 	}
 }

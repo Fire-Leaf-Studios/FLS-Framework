@@ -1,6 +1,7 @@
 package fls.engine.main;
 
 import java.awt.Canvas;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Point;
@@ -8,34 +9,32 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
+import java.util.Enumeration;
+import java.util.Properties;
 
 import javax.swing.JFrame;
 
-import fls.engine.main.art.ABSColor;
 import fls.engine.main.art.Art;
-import fls.engine.main.art.SplitImage;
 import fls.engine.main.input.Input;
 import fls.engine.main.screen.NonRenderScreen;
 import fls.engine.main.screen.Screen;
+import fls.engine.main.screen.SplashScreen;
 import fls.engine.main.util.DeviceScreen;
 
 @SuppressWarnings("serial")
 public class Init extends Canvas implements Runnable {
 
-	public static int width = 500;
-	public static int height;
-	public static int scale = 1;
+	public int width = 500;
+	public int height;
+	public int scale = 1;
 	public static int imageScale = 1;
 	private boolean running = false;
 	public BufferedImage image;
 	public BufferedImage icon;
 	public Thread thread;
 	public String title;
-	private boolean started = false;
 	private boolean printFPS = false;
-	private boolean skipInit = false;
 	private int ticks = 0;
-	private int splashCountDown;
 	private int lastFrames;
 	public int exFrames;
 	public JFrame frame;
@@ -47,9 +46,12 @@ public class Init extends Canvas implements Runnable {
 
 	private double desTicks = 60D;
 	private Screen screen;
+	private SplashScreen splashScreen;
+	private boolean splash;
 	private Input input;
 	public boolean fullScreen;
 	public boolean waitingForScreenShot;
+	private BufferedImage customCursor;
 	
 	public Init(String name, int w, int h, boolean f, int iw, int ih){
 		this(name, w, h, f);
@@ -72,7 +74,10 @@ public class Init extends Canvas implements Runnable {
 			if(!DeviceScreen.setFullScreen(this)){
 				frame.setUndecorated(false);
 				frame.pack();
-				frame.setVisible(true);	
+				frame.setVisible(true);
+				frame.setResizable(false);
+			}else {
+				this.fullScreen = true;
 			}
 			frame.addFocusListener(new FocusListener() {
 
@@ -98,10 +103,11 @@ public class Init extends Canvas implements Runnable {
 
 		frame.setLocationRelativeTo(null);
 		
+		this.splash = true;
 		// this.setInput(new Input(this, Input.CONTROLLER));
 		this.lastFrames = 0;
 		this.waitingForScreenShot = false;
-		this.splashCountDown = 60 * 4;
+		this.setScreen(new SplashScreen());
 		//skipInit();
 	}
 
@@ -151,7 +157,7 @@ public class Init extends Canvas implements Runnable {
 
 			if (System.currentTimeMillis() - lastTimer1 > 1000) {
 				lastTimer1 += 1000;
-				System.out.println("Frames: " + this.exFrames + ", Ticks: " + this.ticks);
+				if(this.printFPS)System.out.println("Frames: " + this.exFrames + ", Ticks: " + this.ticks);
 				this.lastFrames = this.exFrames;
 				this.exFrames = 0;
 				this.ticks = 0;
@@ -161,19 +167,14 @@ public class Init extends Canvas implements Runnable {
 	}
 
 	private final void initTick() {
-		if (!skipInit) {
-			if (started) {
-				screen.inputTick();
-				screen.update();
-			}else{
-				if(this.splashCountDown==0){
-					started = true;
-				}
-				this.splashCountDown--;
-			}
-		} else {
-			screen.inputTick();
-			screen.update();
+		if(this.splash) {
+			this.splashScreen.inputTick();
+			this.splashScreen.update();
+			
+			if(this.splashScreen.done) this.splash = false;
+		}else{ // Update the regular screen
+			this.screen.inputTick();
+			this.screen.update();
 		}
 	}
 
@@ -184,19 +185,8 @@ public class Init extends Canvas implements Runnable {
 			return;
 		}
 		Graphics g = bs.getDrawGraphics();
-		if (!skipInit) {
-			if (started)
-				this.screen.render(g);
-			else
-				splash(g);
-		} else {
-			this.screen.render(g);
-		}
-		if (!fullScreen) {
-			g.drawImage(image, 0, 0, width * imageScale, height * imageScale, null);
-		} else {
-			g.drawImage(image, 0, 0, frame.getWidth(), frame.getHeight(), null);
-		}
+		(this.splash?this.splashScreen:this.screen).render(g);
+		g.drawImage(image, 0, 0, width * imageScale, height * imageScale, null);
 		g.dispose();
 		bs.show();
 		
@@ -211,29 +201,10 @@ public class Init extends Canvas implements Runnable {
 
 	}
 
-	private BufferedImage splash;
-
-	private void splash(Graphics g) {
-		if (splash == null)
-			splash = new SplitImage("/Splash.png").load();
-		Art.fillScreen(this, g, ABSColor.black);
-		int sx = (width * scale / 2) - (splash.getWidth() / 2);
-		int sy = (height * scale / 2) - (splash.getHeight() / 2);
-		g.drawImage(splash, sx, sy, null);
-		String msg = "Version :" + version;
-		Art.useUserColor("Splash-random");
-		Art.drawString(msg, g, (getWidth() / 2) - msg.length() * 2, sy + splash.getHeight());
-		if (ticks > 60 * 4) {
-			Art.fillScreen(this, g, ABSColor.black);
-			started = true;
-			ticks = 0;
-		}
-	}
-
 	public void start() {
 		if (running)
 			return;
-		Art.randomColorFont("Splash-random", 50);
+		//Art.randomColorFont("Splash-random", 50);
 		thread = new Thread(this, this.title);
 		thread.start();
 		running = true;
@@ -265,19 +236,19 @@ public class Init extends Canvas implements Runnable {
 			System.out.println(creators[creators.length - 1] + ".");
 		}
 		System.out.println("");
-		System.out.println("[FLS Framework] created by Elliot Lee-Cerrino");
+		System.out.println("[Pixel Chucker] created by Elliot Lee-Cerrino");
 		System.exit(0);
 	}
 
 	/**
-	 * Call if you want to do somthing will the game is closing
+	 * Call if you want to do something when the game is closing
 	 */
 	public void afterClose() {
 
 	}
 
 	/**
-	 * determains how often the game updates
+	 * Determines how often the game updates
 	 * 
 	 * @param ticks
 	 */
@@ -286,7 +257,7 @@ public class Init extends Canvas implements Runnable {
 	}
 
 	/**
-	 * Replaces the old alterSize method with major improvments<br>
+	 * Replaces the old alterSize method with major improvements<br>
 	 * like setting the title
 	 * 
 	 * @param title
@@ -295,8 +266,8 @@ public class Init extends Canvas implements Runnable {
 	 */
 	public void createWindow(String title, int width, int height) {
 		this.title = title;
-		Init.width = width;
-		Init.height = height;
+		this.width = width;
+		this.height = height;
 		setTitle(title);
 		setSize(width * scale, height * scale);
 		setPreferredSize(new Dimension(width * scale, height * scale));
@@ -309,7 +280,7 @@ public class Init extends Canvas implements Runnable {
 	 */
 	public void setScale(int s) {
 		scale = s;
-		createWindow(this.title, Init.width, Init.height);
+		createWindow(this.title, this.width, this.height);
 	}
 
 	/**
@@ -322,8 +293,8 @@ public class Init extends Canvas implements Runnable {
 	 */
 	public void createWindow(String title, int width) {
 		this.title = title;
-		Init.width = width;
-		int height = Init.height = (width / 16) * 9;
+		this.width = width;
+		int height = this.height = (width / 16) * 9;
 		setTitle(title);
 		setSize(width * scale, height * scale);
 		setPreferredSize(new Dimension(width * scale, height * scale));
@@ -343,7 +314,12 @@ public class Init extends Canvas implements Runnable {
 		s.init(this, this.input);
 		System.out.println("Loaded a new screen: " + s.getClass().getSimpleName());
 		s.postInit();
-		this.screen = s;
+		
+		if(this.splashScreen == null) { // Splash screen
+			this.splashScreen = (SplashScreen) s;
+		}else {
+			this.screen = s;
+		}
 	}
 
 	/**
@@ -372,7 +348,7 @@ public class Init extends Canvas implements Runnable {
 	 * @param show
 	 */
 	public void showFPS() {
-		printFPS = true;
+		this.printFPS = true;
 	}
 
 	/**
@@ -410,6 +386,16 @@ public class Init extends Canvas implements Runnable {
 		this.isUsingCustom = true;
 		BufferedImage b = new BufferedImage(x, y, alpha ? BufferedImage.TYPE_INT_ARGB : BufferedImage.TYPE_INT_RGB);
 		image = b;
+		
+		if(this.splashScreen != null) {
+			this.splashScreen.init(this, input);
+			this.splashScreen.postInit();
+		}
+		
+		if(this.screen != null) {
+			this.screen.init(this, input);
+			this.screen.postInit();
+		}
 		return b;
 	}
 
@@ -431,7 +417,7 @@ public class Init extends Canvas implements Runnable {
 	}
 
 	public void skipInit() {
-		skipInit = true;
+		this.splash = false;
 	}
 
 	public boolean isCustomImage() {
@@ -461,6 +447,50 @@ public class Init extends Canvas implements Runnable {
 	
 	public void hiderCursor(){
 		this.setCursor(this.getToolkit().createCustomCursor(new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB), new Point(0,0), ""));
+	}
+	
+	public void showCursor(){
+		if(this.customCursor != null)this.setCursor(this.getToolkit().createCustomCursor(customCursor, new Point(0,0), ""));
+		else this.setCursor(Cursor.getDefaultCursor());
+	}
+	
+	public void setCursor(int[] data, int xs){
+		BufferedImage c = new BufferedImage(xs, xs, BufferedImage.TYPE_INT_RGB);
+		c.setRGB(0, 0, xs, xs, data, 0, xs);
+		this.setCursor(this.getToolkit().createCustomCursor(c, new Point(0,0), ""));
+		this.customCursor = c;
+	}
+	
+	public boolean isFullScreen() {
+		return this.fullScreen;
+	}
+	
+	public boolean isWindows() {
+		return System.getProperty("os.name").toLowerCase().contains("win");
+	}
+	
+	public boolean isLinux() {
+		String os = System.getProperty("os.name").toLowerCase();
+		return os.contains("nix") || os.contains("nux") || os.contains("aix");
+	}
+	
+	// Desktop ENV
+	public boolean isRunningGnome() {
+		String desk  = System.getProperty("sun.desktop").toLowerCase();
+		return desk.contains("gnome");
+	}
+	
+	public boolean isMac() {
+		return System.getProperty("os.name").toLowerCase().contains("mac");
+	}
+	
+	public void printProperties() {
+		Properties props = System.getProperties();
+	    Enumeration<?> e = props.propertyNames();
+	    while (e.hasMoreElements()) {
+	      String key = (String) e.nextElement();
+	      System.out.println(key + " -- " + props.getProperty(key) + "\n");
+	    }
 	}
 
 	public static void main(String[] args) {

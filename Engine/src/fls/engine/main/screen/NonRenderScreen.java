@@ -3,17 +3,13 @@ package fls.engine.main.screen;
 import java.awt.Graphics;
 
 import fls.engine.main.util.Font;
-import fls.engine.main.util.Renderer;
 
 public class NonRenderScreen extends Screen{
 	
-	private Renderer r;
 	private int tick;
 	
 	public void postInit(){
-		this.r = new Renderer(this.game);
 		this.tick = 0;
-		Font.newInstance(this.game);
 	}
 	
 	@Override
