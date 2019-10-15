@@ -46,7 +46,8 @@
 	<target name="compile" depends="clean, checkConfig">
 		<echo>Compiling classes</echo>
 		<mkdir dir="build/classes"/>
-		<javac srcdir="${adPath}src" destdir="build/classes" includeantruntime="false">
+		
+		<javac target="1.7" srcdir="${adPath}src" destdir="build/classes" includeantruntime="false">
 			<classpath>
 				<fileset dir="${adPath}/lib">
 					<include name="**/*.jar"/>
