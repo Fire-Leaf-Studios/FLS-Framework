@@ -2,11 +2,11 @@
 <classpath>
 	<classpathentry kind="src" path="Engine/src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="C:/Users/Eddy/Desktop/dists/dist/jinput.jar">
+	<classpathentry kind="lib" path="Engine/res"/>
+	<classpathentry kind="lib" path="Engine/lib/JInput/jinput.jar">
 		<attributes>
-			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="C:/Users/Eddy/Desktop/dists/dist"/>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Engine/Engine/lib/JInput"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/Eddy/Desktop/dists/dist/GJAPI.jar"/>
 	<classpathentry kind="output" path="Engine/bin"/>
 </classpath>

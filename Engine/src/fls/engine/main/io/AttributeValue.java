@@ -167,4 +167,8 @@ public class AttributeValue {
 		}
 		this.df.writeFile();
 	}
+	
+	public String toString(){
+		return this.val;
+	}
 }

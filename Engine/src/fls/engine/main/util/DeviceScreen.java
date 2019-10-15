@@ -20,6 +20,7 @@ public class DeviceScreen {
 	
 	public static boolean setFullScreen(Init init){		
 		log("Going to find a fullscreen model");
+		DisplayMode current = screen.getDisplayMode();
 		DisplayMode disp = null;
 		int lw = 9999;
 		int lh = 9999;
@@ -35,22 +36,27 @@ public class DeviceScreen {
 				break;
 			}
 			
-			if(dw < lw && lh < dh){// Closest macth yet
+			if(dw < lw && lh < dh){// Closest match yet
 				lw = dm.getWidth();
 				lh = dm.getHeight();
 				disp = dm;
 			}
 		}
 		try{
+			if(disp == null) {
+				err("Unable to find a screen mode sutable, returning to windowed set up");
+				return false;
+			}
 			screen.setFullScreenWindow(init.frame);
 			screen.setDisplayMode(disp);
 			log("Successfully set window to fullscreen mode");
 			return true;
 		}catch(Exception e){
 			e.printStackTrace();
+			screen.setDisplayMode(current);
 			err("Unable to set window to full screen, continuing in windowed set up");
+			return false;
 		}
-		return false;
 	}
 	
 	private static void log(String msg){

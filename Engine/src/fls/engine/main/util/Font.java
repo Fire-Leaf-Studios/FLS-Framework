@@ -65,26 +65,51 @@ public class Font {
 	}
 	
 	public void drawStringCenter(Renderer r, String msg, int y){
-		int w = msg.trim().length() * 8;
-		int xo = (this.w - w) / 2;
-		drawString(r, msg, xo, y);
+		String[] p = msg.split("\n");
+		for(int i = 0; i < p.length; i++){
+			int w = p[i].trim().length() * 8;
+			int xo = (this.w - w) / 2;
+			drawString(r, p[i], xo, y + i * 8);
+		}
 	}
 	
 	public void drawStringCenter(Renderer r, String msg, int y, int col){
-		int w = msg.trim().length() * 8;
-		int xo = (this.w - w) / 2;
-		drawString(r, msg, xo, y, col);
+		String[] p = msg.split("\n");
+		for(int i = 0; i < p.length; i++){
+			int w = p[i].trim().length() * 8;
+			int xo = (this.w - w) / 2;
+			drawString(r, p[i], xo, y + i * 8, col);
+		}
 	}
 	
 	public void drawStringCenter(Renderer r, String msg){
 		String[] lines =  msg.split("\n");
 		int gyo = lines.length * 4;
 		for(int i = 0; i < lines.length; i++){
-			String c = lines[i].trim();
+			String c = lines[i];
 			int w = c.trim().length() * 8;
+			if(c.indexOf("%") != -1){
+				String middle = c.substring(c.indexOf("%") + 1, c.lastIndexOf("%"));
+				String[] parts = middle.split("%");
+				w -= (parts[0].length()+3) * 8;
+			}
 			int xo = (this.w - w) / 2;
 			int yo = (this.h - 8) / 2 + i * 8;
-			drawString(r, c, xo, yo - gyo);
+			
+			if(c.indexOf("%") != -1){//we want to color this one
+				String before = c.substring(0, c.indexOf("%"));
+				String after = c.substring(c.lastIndexOf("%") + 1);
+				
+				String middle = c.substring(c.indexOf("%") + 1, c.lastIndexOf("%"));
+				String[] parts = middle.split("%");
+				String[] cParts = parts[0].split(",");
+				int col = r.makeRGB(cParts[0], cParts[1], cParts[2]);
+				drawString(r, before, xo, yo - gyo);
+				drawString(r, parts[1], xo + before.length()*8, yo - gyo, col);
+				drawString(r, after, xo + (parts[1]+before).length()*8, yo - gyo);
+			}else{
+				drawString(r, c, xo, yo - gyo);
+			}
 		}
 	}
 	
@@ -93,7 +118,7 @@ public class Font {
 		int gyo = lines.length * 4;
 		for(int i = 0; i < lines.length; i++){
 			String c = lines[i].trim();
-			int w = c.trim().length() * 8;
+			int w = (c.trim().length()+1) * 8;
 			int xo = (this.w - w) / 2;
 			int yo = (this.h - 8) / 2 + i * 8;
 			drawString(r, c, xo, yo - gyo, col);
