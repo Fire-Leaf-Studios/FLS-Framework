@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 *target*
 *.jar
 *.war
@@ -9,7 +8,7 @@
 *.pydevproject
 .project
 .metadata
-bin/**
+Engine/bin/**
 tmp/**
 tmp/**/*
 *.tmp
