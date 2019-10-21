@@ -97,6 +97,7 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener, C
         case CONTROLLER:
         	this.addedControllers = true;
             System.out.println("Added Controller input");
+            this.ce = ControllerEnvironment.getDefaultEnvironment();
             this.scanForControllers(true);
             break;
         default:
@@ -162,12 +163,11 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener, C
     public void scanForControllers(boolean names){
     	if(!this.addedControllers || this.alreadyGotControllers)return;
     	
-    	DirectAndRawInputEnvironmentPlugin directEnv = new DirectAndRawInputEnvironmentPlugin();
     	if(this.ce.isSupported()){
     		System.out.println("Using DIRECT env!");
+    		DirectAndRawInputEnvironmentPlugin directEnv = new DirectAndRawInputEnvironmentPlugin();
     		this.conts = directEnv.getControllers();
     	}else{
-    		this.ce = ControllerEnvironment.getDefaultEnvironment();
             this.conts = this.ce.getControllers();
     	}
         this.ce.addControllerListener(this);

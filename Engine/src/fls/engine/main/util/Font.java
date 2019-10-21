@@ -8,7 +8,7 @@ public class Font {
 
 	
 	public static Font instance = new Font();
-	private final String letters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ+-()!,’.:/><@^~#¬_=|[]";
+	private final String letters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ+-()!,'.:/><@^~#$_=|[]";
 	private final SpriteParser sp = new SpriteParser(FileIO.instance.readInternalFile("/font.art"));
 	private int w = 0;
 	private int h = 0;

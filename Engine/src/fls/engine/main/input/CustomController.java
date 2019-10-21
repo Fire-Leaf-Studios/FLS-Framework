@@ -260,4 +260,8 @@ public class CustomController {
 	public boolean connected(){
 		return this.connected;
 	}
+	
+	public Controller getBase() {
+		return this.base;
+	}
 }

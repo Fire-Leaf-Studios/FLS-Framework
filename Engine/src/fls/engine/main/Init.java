@@ -92,9 +92,9 @@ public class Init extends Canvas implements Runnable {
 				}
 			});
 		} else {
-			frame.pack();
 			frame.setResizable(false);
 			frame.setVisible(true);
+			frame.pack();
 		}
 		
 		if (this.icon != null) {
