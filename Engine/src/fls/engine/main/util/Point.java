@@ -26,6 +26,20 @@ public class Point{
 		return dist;
 	}
 	
+	public float getAngle(Point p) {
+		int xx = p.getIX() - this.getIX();
+		int yy = p.getIY() - this.getIY();
+		float rad = (float)Math.atan2(yy, xx);
+		return rad;
+	}
+	
+	public float getAngleDegrees(Point p) {
+		float deg = (float)Math.toDegrees(this.getAngle(p)) + 90;
+		deg %= 360;
+		while(deg < 0)deg += 360;
+		return deg;
+	}
+	
 	public void setPos(float x, float y){
 		this.x = x;
 		this.y = y;

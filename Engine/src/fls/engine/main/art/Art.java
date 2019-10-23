@@ -144,6 +144,6 @@ public class Art {
     }
     
     public static void showImage(BufferedImage i){
-    	JOptionPane.showMessageDialog(null, null,"Image",JOptionPane.OK_OPTION,new ImageIcon(i));
+    	JOptionPane.showMessageDialog(null, null, "Image", JOptionPane.OK_OPTION, new ImageIcon(i));
     }
 }
