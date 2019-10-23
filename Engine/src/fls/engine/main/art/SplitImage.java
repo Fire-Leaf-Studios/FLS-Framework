@@ -21,6 +21,7 @@ public class SplitImage {
     public SplitImage(BufferedImage i){
     	this.loc = "Pre-loaded";
     	this.pre_image = i;
+    	this.defaultImageType = this.pre_image.getType();
     }
 
     public BufferedImage getImage() {
@@ -39,12 +40,8 @@ public class SplitImage {
     public BufferedImage load() {
         try {
             BufferedImage org = ImageIO.read(Art.class.getResourceAsStream(loc));
-            BufferedImage res = new BufferedImage(org.getWidth(), org.getHeight(), BufferedImage.TYPE_INT_ARGB);
             this.defaultImageType = org.getType();
-            Graphics g = res.getGraphics();
-            g.drawImage(res, 0, 0, null);
-            g.dispose();
-            return res;
+            return org;
         } catch (Exception e) {
         	e.printStackTrace();
             throw new RuntimeException(loc + " : can't be found");
@@ -58,10 +55,11 @@ public class SplitImage {
         BufferedImage[][] res = new BufferedImage[xSlide][ySlide];
         for (int x = 0; x < xSlide; x++) {
             for (int y = 0; y < ySlide; y++) {
-                res[x][y] = new BufferedImage(xs, ys, this.defaultImageType);
-                Graphics g = res[x][y].getGraphics();
+            	BufferedImage newImage = new BufferedImage(xs, ys, this.defaultImageType);
+                Graphics g = newImage.getGraphics();
                 g.drawImage(src, -xs * x, -ys * y, null);
                 g.dispose();
+                res[x][y] = newImage;
             }
         }
         return res;
@@ -90,7 +88,7 @@ public class SplitImage {
     public static BufferedImage scale(BufferedImage src, int scale) {
         int w = src.getWidth() * scale;
         int h = src.getHeight() * scale;
-        BufferedImage res = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage res = new BufferedImage(w, h, src.getType());
         Graphics g = res.getGraphics();
         g.drawImage(src.getScaledInstance(w, h, BufferedImage.SCALE_AREA_AVERAGING), 0, 0, null);
         return res;
@@ -100,7 +98,7 @@ public class SplitImage {
     	int[] pixels = new int[this.pre_image.getWidth() * this.pre_image.getHeight()];
     	int w = this.pre_image.getWidth();
     	int h = this.pre_image .getHeight();
-    	BufferedImage res = new BufferedImage(w,h,BufferedImage.TYPE_INT_ARGB);
+    	BufferedImage res = new BufferedImage(w ,h, BufferedImage.TYPE_INT_ARGB);
     	this.pre_image.getRGB(0, 0, w, h, pixels, 0, w);
     	for(int x = 0; x < w; x++){
     		for(int y = 0; y < h; y++){
@@ -109,7 +107,6 @@ public class SplitImage {
     			}
     		}
     	}
-    	//JOptionPane.showMessageDialog(null,null,"New Image",JOptionPane.OK_CANCEL_OPTION,new ImageIcon(res));
     	return new SplitImage(res);
     }
 

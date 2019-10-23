@@ -56,12 +56,18 @@ public class Renderer {
 	}
 
 	public void setPixel(int x, int y, int c) {
+		if(c < 0)return;
+		
 		x += this.xOff;
 		y += this.yOff;
-		if (!isValid(x, y))
+		
+		if (!isValid(x, y)) {
+			return;	
+		}
+		if (this.pixles[x + y * this.w] == c) {
 			return;
-		if (this.pixles[x + y * this.w] == c || c < 0)
-			return;
+		}
+		
 		this.pixles[x + y * this.w] = c;
 		this.dirty[y] = true;
 	}
@@ -76,30 +82,12 @@ public class Renderer {
 
 	public void renderImage(BufferedImage img, int x, int y, int w, int h) {
 		int[] res = new int[w * h];
-		boolean a = img.getColorModel().hasAlpha();
 		img.getRGB(0, 0, w, h, res, 0, w);
-		for (int i = 0; i < w * h; i++) {
-			int tx = i % w;
-			int ty = i / w;
-			int c = res[i];
-
-			int aa = 255;
-			if (a) {
-				aa = (c >> 24) & 0xFF;
-				if (aa == 0)
-					continue;
-			}
-
-			int rr = (c >> 16) & 0xFF;
-			int gg = (c >> 8) & 0xFF;
-			int bb = (c) & 0xFF;
-			System.out.println(aa + ":" + rr + ":" + gg + ":" + bb);
-			setPixel(x + tx, y + ty, makeRGB(rr, gg, bb));
-		}
+		this.renderSection(res, x, y, w);
 	}
 
-	public void renderImage(BufferedImage img, int x, int y, int w) {
-		renderImage(img, x, y, w, w);
+	public void renderImage(BufferedImage img, int x, int y) {
+		renderImage(img, x, y, img.getWidth(), img.getHeight());
 	}
 
 	public void shade(int x, int y) {
@@ -244,6 +232,10 @@ public class Renderer {
 		this.xOff = xo;
 		this.yOff = yo;
 	}
+	
+	public Point getOffset() {
+		return new Point(this.xOff, this.yOff);
+	}
 
 	public int getWidth() {
 		return this.w;
@@ -280,7 +272,7 @@ public class Renderer {
 				if(Math.abs(xx) < min && Math.abs(yy) < min)continue;
 				int x2 = xx * xx;
 				int y2 = yy * yy;
-				if (x2 + y2 < (r * r) - 3) {
+				if (x2 + y2 < (r * r)) {
 					this.setPixel(x + xx, y + yy, c);
 				}
 			}
