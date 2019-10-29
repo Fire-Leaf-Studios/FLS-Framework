@@ -5,6 +5,7 @@ import java.awt.image.DataBufferInt;
 
 import fls.engine.main.Init;
 import fls.engine.main.screen.Screen;
+import fls.engine.main.util.rendertools.Sprite;
 
 public class Renderer {
 
@@ -70,6 +71,11 @@ public class Renderer {
 		
 		this.pixles[x + y * this.w] = c;
 		this.dirty[y] = true;
+	}
+	
+	public void renderSprite(Sprite s) {
+		if(s.getBitmapData() == null || s.getWidth() == 0) return;
+		this.renderSection(s.getBitmapData(), s.getPos().getIX(), s.getPos().getIY(), s.getWidth());
 	}
 
 	public void renderSection(int[] data, int x, int y, int xs) {
