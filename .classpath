@@ -3,7 +3,7 @@
 	<classpathentry kind="src" path="Engine/src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="Engine/res"/>
-	<classpathentry kind="lib" path="G:/Coding/Java/Libraries/FLSEngine/jinput.jar">
+	<classpathentry kind="lib" path="G:/Coding/Java/Libraries/FLSEngine/JInput-2.0.9/jinput-2.0.9.jar">
 		<attributes>
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="G:/Coding/Java/Libraries/JInput"/>
 		</attributes>
