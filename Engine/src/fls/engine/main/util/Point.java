@@ -19,12 +19,23 @@ public class Point{
 		return (int)y;
 	}
 	
+	/**
+	 * Calculate the squared distance to another Point
+	 * @param p - Point we want to measure against
+	 * @return distance squared
+	 */
 	public int dist(Point p){
 		int xx = p.getIX() - this.getIX();
 		int yy = p.getIY() - this.getIY();
 		int dist = (xx * xx) + (yy * yy);
 		return dist;
 	}
+	
+	/**
+	 * Returns the angle between a point in radians
+	 * @param p - Point we want the angle to
+	 * @return the angle to P in radians
+	 */
 	
 	public float getAngle(Point p) {
 		int xx = p.getIX() - this.getIX();
@@ -33,6 +44,11 @@ public class Point{
 		return rad;
 	}
 	
+	/**
+	 * Returns an offset angle in degrees
+	 * @param p - Point we want the angle to
+	 * @return the angle to P in degrees (0deg is north and 180deg is south)
+	 */
 	public float getAngleDegrees(Point p) {
 		float deg = (float)Math.toDegrees(this.getAngle(p)) + 90;
 		deg %= 360;

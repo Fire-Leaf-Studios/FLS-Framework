@@ -7,6 +7,11 @@ import fls.engine.main.Init;
 import fls.engine.main.screen.Screen;
 import fls.engine.main.util.rendertools.Sprite;
 
+/**
+ * A class for drawing to the screen
+ * @author h2n0
+ *
+ */
 public class Renderer {
 
 	private BufferedImage img;
@@ -18,10 +23,18 @@ public class Renderer {
 	private int scale;
 	protected int xOff, yOff;
 	
+	/**
+	 * Initialise the renderer for this screen
+	 * @param s - {@link Screen}
+	 */
 	public Renderer(Screen s) {
 		this(s.game);
 	}
-
+  
+	/**
+	 * Initialise the renderer with the main game class
+	 * @param i - {@link Init}
+	 */
 	public Renderer(Init i) {
 		Font.newInstance(i);
 		if (!i.isCustomImage()) {
@@ -48,6 +61,11 @@ public class Renderer {
 		}
 	}
 
+	/**
+	 * Return all the pixels across the screen at the given Y value
+	 * @param y - Y to extract all pixels from
+	 * @return all pixels across a given Y
+	 */
 	private int[] getPixels(int y) {
 		int[] res = new int[this.w];
 		for (int i = 0; i < this.w; i++) {
@@ -56,6 +74,12 @@ public class Renderer {
 		return res;
 	}
 
+	/**
+	 * Set a pixel on screen to get a given color
+	 * @param x - X location on screen
+	 * @param y - Y location on screen
+	 * @param c - Color to be {@link Renderer.makeRGB}
+	 */
 	public void setPixel(int x, int y, int c) {
 		if(c < 0)return;
 		
@@ -73,11 +97,22 @@ public class Renderer {
 		this.dirty[y] = true;
 	}
 	
+	/**
+	 * Render a given sprite
+	 * @param s - {@link Sprite}
+	 */
 	public void renderSprite(Sprite s) {
 		if(s.getBitmapData() == null || s.getWidth() == 0) return;
 		this.renderSection(s.getBitmapData(), s.getPos().getIX(), s.getPos().getIY(), s.getWidth());
 	}
 
+	/**
+	 * Render a given data frame
+	 * @param data - the frame to render
+	 * @param x - x coordinate
+	 * @param y - y coordinate
+	 * @param xs - width of frame
+	 */
 	public void renderSection(int[] data, int x, int y, int xs) {
 		for (int i = 0; i < xs * xs; i++) {
 			int xx = i % xs;
@@ -86,16 +121,35 @@ public class Renderer {
 		}
 	}
 
+	/**
+	 * Render an image to the screen
+	 * @param img
+	 * @param x
+	 * @param y
+	 * @param w
+	 * @param h
+	 */
 	public void renderImage(BufferedImage img, int x, int y, int w, int h) {
 		int[] res = new int[w * h];
 		img.getRGB(0, 0, w, h, res, 0, w);
 		this.renderSection(res, x, y, w);
 	}
 
+	/**
+	 * Render an entire image to the screen
+	 * @param img
+	 * @param x
+	 * @param y
+	 */
 	public void renderImage(BufferedImage img, int x, int y) {
 		renderImage(img, x, y, img.getWidth(), img.getHeight());
 	}
 
+	/**
+	 * Shade the pixel at the given coordinates
+	 * @param x
+	 * @param y
+	 */
 	public void shade(int x, int y) {
 		x += this.xOff;
 		y += this.yOff;
@@ -109,6 +163,11 @@ public class Renderer {
 		setPixel(x - this.xOff, y - this.yOff, rgb);
 	}
 
+	/**
+	 * Lighten the pixel at the given coordinates
+	 * @param x
+	 * @param y
+	 */
 	public void lighten(int x, int y) {
 		x += this.xOff;
 		y += this.yOff;
@@ -122,6 +181,14 @@ public class Renderer {
 		setPixel(x - this.xOff, y - this.yOff, rgb);
 	}
 
+	/**
+	 * Produce a shaded color based off an existing color
+	 * @param r - How much red
+	 * @param g - How much green
+	 * @param b - How much blue
+	 * @param amt
+	 * @return shaded color
+	 */
 	public int getShadedColor(int r, int g, int b, float amt) {
 		if (amt >= 1)
 			return makeRGB(r, g, b);
@@ -133,6 +200,12 @@ public class Renderer {
 		return makeRGB(r, g, b);
 	}
 
+	/**
+	 * Simplified version of a similar function
+	 * @param col
+	 * @param amt
+	 * @return shaded color
+	 */
 	public int getShadedColor(int col, float amt) {
 		if (amt >= 1)
 			return col;
@@ -151,6 +224,13 @@ public class Renderer {
 			return true;
 	}
 
+	/**
+	 * Helper function to create colors
+	 * @param r
+	 * @param g
+	 * @param b
+	 * @return RGB
+	 */
 	public int makeRGB(int r, int g, int b) {
 		r = clamp(r);
 		g = clamp(g);
@@ -158,10 +238,21 @@ public class Renderer {
 		return (r << 16) | (g << 8) | b;
 	}
 
+	/**
+	 * Helper function to make colors from strings
+	 * @param r
+	 * @param g
+	 * @param b
+	 * @return RGB
+	 */
 	public int makeRGB(String r, String g, String b) {
 		return makeRGB(Integer.parseInt(r), Integer.parseInt(g), Integer.parseInt(b));
 	}
 
+	/**
+	 * Helper function to fill the screen with a blank color
+	 * @param c -RGB
+	 */
 	public void fill(int c) {
 		for (int i = 0; i < this.pixles.length; i++) {
 			this.pixles[i] = c;
@@ -251,6 +342,12 @@ public class Renderer {
 		return this.h;
 	}
 
+	/**
+	 * Helper function to check if we even on screen
+	 * @param x
+	 * @param y
+	 * @return Boolean
+	 */
 	public boolean isOnScreen(int x, int y) {
 		return isValid(x + xOff, y + yOff);
 	}
@@ -285,6 +382,14 @@ public class Renderer {
 		}
 	}
 
+	/**
+	 * Helper function to draw a line
+	 * @param x0 - point1 start x
+	 * @param y0 - point1 start y
+	 * @param x1 - point2 start x
+	 * @param y1 - point2 start y
+	 * @param c - RGB
+	 */
 	public void drawLine(int x0, int y0, int x1, int y1, int c) {
 		int w = x1 - x0;
 		int h = y1 - y0;
@@ -364,7 +469,7 @@ public class Renderer {
 		this.scale = s;
 	}
 
-	public int clamp(int x) {
+	private int clamp(int x) {
 		if (x < 0)
 			return 0;
 		if (x > 255)
@@ -474,8 +579,9 @@ public class Renderer {
 	
 	
 	public int[] rotate(int[] data, int w, float theta) {
-		while(theta > 360) {
-			theta -= 360;
+		theta %= 360;
+		while(theta < 0) {
+			theta += 360;
 		}
 		theta = (float)((theta / 180f) * Math.PI);
 		float[] mat = new float[] {
