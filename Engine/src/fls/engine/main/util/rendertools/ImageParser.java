@@ -13,9 +13,9 @@ public class ImageParser {
 
 	/**
 	 * Helper function for square images
-	 * @param loc
-	 * @param xs
-	 * @return
+	 * @param loc - Location of file in project structure
+	 * @param xs - Size of frame
+	 * @return array of graphical data
 	 */
 	public static int[][][] parseImage(String loc, int xs){
 		return ImageParser.parseImage(loc, xs, xs);
